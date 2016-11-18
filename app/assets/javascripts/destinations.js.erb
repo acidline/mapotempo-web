@@ -797,7 +797,7 @@ var destinations_index = function(params, api) {
   }
 
   var filter_text = function(exactText, normalizedValue, filter, index) {
-    return !!String(exactText).match(new RegExp(filter, 'i'));
+    return !!String(exactText).match(new RegExp(filter.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"), 'i'));
   }
 
   var filter_number = function(exactText, normalizedValue, filter, index) {
@@ -805,7 +805,7 @@ var destinations_index = function(params, api) {
   }
 
   var filter_phone = function(exactText, normalizedValue, filter, index) {
-    return !!String(normalizedValue).match(new RegExp(simply_phone(filter), 'i'));
+    return !!String(normalizedValue).match(new RegExp(simply_phone(filter).replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"), 'i'));
   }
 
   var simply_phone = function(number) {
