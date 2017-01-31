@@ -154,24 +154,6 @@ fr:
         take_over: "Durée de visite des clients"
         name: "Nom"
         destinations: "Clients"
-        enable_tomtom: "Activer TomTom WEBFLEET"
-        enable_masternaut: "Activer Masternaut"
-        enable_alyacom: "Activer Alyacom"
-        enable_teksat: "Activer Teksat"
-        enable_orange_fleet: "Activer Orange Fleet Performance"
-        orange_user: "Utilisateur Orange"
-        orange_password: "Mot de passe Orange"
-        teksat_customer_id: "Client ID Teksat"
-        teksat_username: "Nom d'utilisateur Teksat"
-        teksat_password: "Mot de passe Teksat"
-        teksat_url: "URL Teksat"
-        tomtom_account: "Compte WEBFLEET"
-        tomtom_user: "Nom d'utilisateur WEBFLEET"
-        tomtom_password: "Mot de passe WEBFLEET"
-        masternaut_user: "Nom d'utilisateur"
-        masternaut_password: "Mot de passe"
-        alyacom_association: "Identifiant AlyaCom"
-        alyacom_api_key: "Clé d'API AlyaCom"
         router: "Calculateur d'itinéraire"
         router_id: "Calculateur d'itinéraire"
         router_dimension: "Objectif du calculateur"
@@ -202,6 +184,36 @@ fr:
         description_help: "Détails sur le compte et les utilisateurs courants"
         enable_vehicle_position: "Activer la position des véhicules"
         enable_stop_status: "Activer les statuts des visites"
+        devices:
+          tomtom:
+            enable: "Activer TomTom WEBFLEET"
+            account: "Compte WEBFLEET"
+            username: "Nom d'utilisateur WEBFLEET"
+            password: "Mot de passe WEBFLEET"
+          masternaut:
+            enable: "Activer Masternaut Geonaut"
+            username: "Nom d'utilisateur"
+            password: "Mot de passe"
+          orange:
+            enable: "Activer Orange Fleet Performance"
+            username: "Utilisateur Orange"
+            password: "Mot de passe Orange"
+          alyacom:
+            enable: "Activer Alyacom Mobile Solution"
+            association: "Identifiant AlyaCom"
+            api_key: "Clé d'API AlyaCom"
+          teksat:
+            enable: "Activer Teksat  Connected Fleet"
+            customer_id: "Client ID Teksat"
+            username: "Nom d'utilisateur Teksat"
+            password: "Mot de passe Teksat"
+            url: "URL Teksat"
+          trimble:
+            enable: "Activer Trimble GeoManager"
+          locster:
+            enable: "Activer Locster Fleet Solution"
+          suiviDeFlotte:
+            enable: "Activer SuiviDeFlotte Suivi de mission"
       deliverable_unit:
         label: "Libellé"
         ref: "Référence"
@@ -624,6 +636,7 @@ fr:
       vehicles:
         list: "Liste des véhicules"
       time_zone: "Fuseau horaire"
+      devices: "Exports GPS & Mobiles"
     index:
       title: "Liste comptes client"
       new: "Nouveau compte client"
@@ -650,16 +663,6 @@ fr:
       optimization_parameters: "Paramètres d'optimisation"
       router_help: "Profil utilisé pour les calculs d'itinéraires par défaut"
       take_over_help: "Durée de visite moyenne par client"
-      tomtom: "TomTom WEBFLEET"
-      tomtom_help: "Permet d'envoyer les plannings vers les GPS TomTom Pro avec WEBFLEET."
-      teksat: "Teksat"
-      teksat_help: "Envoyer les plannings vers les GPS Teksat"
-      orange: "Orange Fleet Performance"
-      orange_help: "Envoyer les plannings vers les GPS Orange Fleet Performance"
-      masternaut: "Masternaut"
-      masternaut_help: "Permet d'envoyer les plannings vers les GPS Masternaut."
-      alyacom: "AlyaCom"
-      alyacom_help: "Permet d'envoyer les plannings vers l'application AlyaCom."
       optimization_cluster_size_default: "%{n} (valeur par défaut)"
       optimization_cluster_size_help: "Valeur en secondes séparant les points à regrouper entre eux avant de les optimiser. Une valeur trop grande affectera la qualité de l'optimisation (30 sec est une grande valeur). Valable uniquement dans le cas d'une optimisation d'une seule tournée avec retards."
       optimization_time_default: "%{n} (valeur par défaut)"
@@ -673,17 +676,29 @@ fr:
       speed_multiplicator_default: "%{n} (valeur par défaut)"
       speed_multiplicator_help: "Une valeur supérieure à 100% signifie une vitesse plus élevée."
       submit: "Enregistrer paramétrage global"
-      sync:
-        complete: "Synchronisation complète"
-        orange:
-          confirm: "Synchroniser les véhicules depuis Orange Fleet Performance ?"
-          action: "Synchroniser les véhicules depuis Orange Fleet Performance"
-        tomtom:
-          confirm: "Synchroniser les véhicules depuis TomTom WebFLEET ?"
-          action: "Synchroniser les véhicules depuis TomTom WebFLEET"
-        teksat:
-          confirm: "Synchroniser les véhicules depuis Teksat ?"
-          action: "Synchroniser les véhicules depuis Teksat"
+      devices:
+        tomtom: "TomTom WEBFLEET"
+        tomtom_help: "Permet d'envoyer les plannings vers les GPS TomTom Pro avec WEBFLEET."
+        teksat: "Teksat"
+        teksat_help: "Envoyer les plannings vers les GPS Teksat"
+        orange: "Orange Fleet Performance"
+        orange_help: "Envoyer les plannings vers les GPS Orange Fleet Performance"
+        masternaut: "Masternaut"
+        masternaut_help: "Permet d'envoyer les plannings vers les GPS Masternaut."
+        alyacom: "AlyaCom"
+        alyacom_help: "Permet d'envoyer les plannings vers l'application AlyaCom."
+        sync:
+          complete: "Synchronisation complète"
+          orange:
+            confirm: "Synchroniser les véhicules depuis Orange Fleet Performance ?"
+            action: "Synchroniser les véhicules depuis Orange Fleet Performance"
+          tomtom:
+            confirm: "Synchroniser les véhicules depuis TomTom WebFLEET ?"
+            action: "Synchroniser les véhicules depuis TomTom WebFLEET"
+          teksat:
+            confirm: "Synchroniser les véhicules depuis Teksat ?"
+            action: "Synchroniser les véhicules depuis Teksat"
+        submit: "Enregistrer la configuration"
       external_callback:
         title: "URL de rappel"
         name: "Nom"

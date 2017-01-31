@@ -38,10 +38,11 @@ class Customer < ActiveRecord::Base
   has_many :deliverable_units, -> { order('id') }, inverse_of: :customer, autosave: true, dependent: :delete_all, after_add: :update_deliverable_units_track, after_remove: :update_deliverable_units_track
   enum router_dimension: Router::DIMENSION
 
-  attr_accessor :deliverable_units_updated
+  attr_accessor :deliverable_units_updated, :devices
 
   nilify_blanks
-  auto_strip_attributes :name, :tomtom_account, :tomtom_user, :tomtom_password, :print_header, :masternaut_user, :masternaut_password, :alyacom_association, :default_country
+  # auto_strip_attributes :name, :tomtom_account, :tomtom_user, :tomtom_password, :print_header, :masternaut_user, :masternaut_password, :alyacom_association, :default_country
+  auto_strip_attributes :name, :print_header,  :default_country
   validates :ref, uniqueness: { scope: :reseller_id, case_sensitive: true }, allow_nil: true, allow_blank: true
   validates :profile, presence: true
   validates :router, presence: true
@@ -62,7 +63,9 @@ class Customer < ActiveRecord::Base
   after_create :create_default_store, :create_default_vehicle_usage_set, :create_default_deliverable_unit
   before_update :update_out_of_date, :update_max_vehicles, :update_enable_multi_visits
   before_save :sanitize_print_header
-  before_save :devices_update_vehicles, prepend: true
+  
+  # ==> NICOLAS TEST before_save :devices_update_vehicles, prepend: true
+  # serialize :devices, HashWithIndifferentAccess
 
   include RefSanitizer
 
@@ -167,6 +170,10 @@ class Customer < ActiveRecord::Base
     })
   end
 
+  def devices
+    self[:devices].deep_symbolize_keys
+  end
+
   def duplicate
     Customer.transaction do
       copy = self.amoeba_dup
@@ -196,26 +203,6 @@ class Customer < ActiveRecord::Base
     @invalid_max_vehicle = true
   end
 
-  def masternaut?
-    enable_masternaut && !masternaut_user.blank? && !masternaut_password.blank?
-  end
-
-  def alyacom?
-    enable_alyacom && !alyacom_association.blank?
-  end
-
-  def tomtom?
-    enable_tomtom && !tomtom_account.blank? && !tomtom_user.blank? && !tomtom_password.blank?
-  end
-
-  def teksat?
-    enable_teksat && !teksat_customer_id.blank? && !teksat_url.blank? && !teksat_username.blank? && !teksat_password.blank?
-  end
-
-  def orange?
-    enable_orange && !orange_user.blank? && !orange_password.blank?
-  end
-
   def visits
     destinations.collect(&:visits).flatten
   end
@@ -234,9 +221,73 @@ class Customer < ActiveRecord::Base
     }
   end
 
+  def get_json_value(device, key)
+    devices[device.to_sym][key.to_sym]
+  end
+
+  def get_enabled_devices_list
+    devices.select{ |device, conf| conf[:enable] == "true" }
+  end
+
+  def get_devices_list
+    devices = []
+    Mapotempo::Application.config.devices.to_h.each{ |device_name, device_object|
+      devices << device_object.get_device_definition
+    }
+    devices
+  end
+
+  def check_device(device_name)
+    enabled_devices = get_enabled_devices_list
+    active = false
+
+    if enabled_devices.key?(device_name)
+      enabled_devices[device_name].each{ |k, v| 
+        active = !v.blank? ? true : false;
+      }
+    end
+
+    active
+  end
+
+  # Alias / Shortcut to check_device
+  def masternaut?
+    check_device :masternaut
+  end
+
+  def alyacom?
+    check_device :alyacom
+  end
+
+  def tomtom?
+    check_device :tomtom
+  end
+
+  def teksat?
+    check_device :teksat
+  end
+
+  def orange?
+    check_device :orange
+  end
+
+  def trimble?
+    check_device :trimble
+  end
+
+  def locster?
+    check_device :locster
+  end
+
+  def suiviDeFlotte?
+    check_device :suiviDeFlotte
+  end
+
+
   private
 
   def devices_update_vehicles
+    # Remove device association on vehicles
     self.vehicles.select(&:tomtom_id).each{ |vehicle| vehicle.tomtom_id = nil } if !self.enable_tomtom || (self.tomtom_account_changed? && !self.tomtom_account_was.nil?) || (self.tomtom_user_changed? && !self.tomtom_user_was.nil?)
     self.vehicles.select(&:teksat_id).each{ |vehicle| vehicle.teksat_id = nil } if !self.enable_teksat || (self.teksat_customer_id_changed? && !self.teksat_customer_id_was.nil?) || (self.teksat_username_changed? && !self.teksat_username_was.nil?)
     self.vehicles.select(&:orange_id).each{ |vehicle| vehicle.orange_id = nil } if !self.enable_orange || (self.orange_user_changed? && !self.orange_user_was.nil?)

@@ -22,10 +22,30 @@ class Alyacom < DeviceBase
 
   TIMEOUT_VALUE ||= 120
 
-  def test_list(_customer, params)
-    rest_client_get [api_url, params[:alyacom_association], 'users'].join('/'), { apiKey: params[:alyacom_api_key] }
-  rescue RestClient::Forbidden, RestClient::InternalServerError, RestClient::ResourceNotFound
-    raise DeviceServiceError.new('Alyacom: %s' % [ I18n.t('errors.alyacom.unauthorized') ])
+  def get_device_definition
+    {
+      device: 'alyacom',
+      label: 'Alyacom',
+      image_url: 'http://www.alyacom.fr/wp-content/uploads/2013/05/Logo-AlyaCom-small-300x247.png',
+      has_sync: false,
+      translate: {
+        enable: 'activerecord.attributes.customer.devices.alyacom.enable',
+        help: 'customers.form.devices.alyacom_help'
+      },
+      form: [
+        [:text, 'association'],
+        [:text, 'api_key']
+      ]
+    }
+  end
+
+  def check_auth(params, customer)
+    api_key     = params[:alyacom_api_key]      ? params[:alyacom_api_key]      : customer.try(:devices[:alyacom][:api_key])
+    association = params[:alyacom_association]  ? params[:alyacom_association]  : customer.try(:devices[:alyacom][:association])
+
+    rest_client_get [api_url, association, 'users'].join('/'), { apiKey: api_key }
+    rescue RestClient::Forbidden, RestClient::InternalServerError, RestClient::ResourceNotFound
+      raise DeviceServiceError.new('Alyacom: %s' % [ I18n.t('errors.alyacom.unauthorized') ])
   end
 
   def send_route(customer, route, _options = {})

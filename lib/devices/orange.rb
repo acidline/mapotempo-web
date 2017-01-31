@@ -19,8 +19,30 @@ require 'builder' # XML
 require 'addressable'
 
 class Orange < DeviceBase
-  def test_list(customer, params)
-    send_request list_operations(customer, { auth: params.slice(:user, :password) })
+
+  def get_device_definition
+    {
+      device: 'orange',
+      label: 'Orange',
+      image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/350px-Orange_logo.svg.png',
+      has_sync: true,
+      translate: {
+        enable: 'activerecord.attributes.customer.devices.orange.enable',
+        help: 'customers.form.devices.orange_help',
+        sync: 'customers.form.devices.sync.orange.action'
+      },
+      form: [
+        [:text, 'username'],
+        [:password, 'password']
+      ]
+    }
+  end
+
+  def check_auth(params, customer)
+    user    = params[:orange_username]  ? params[:orange_username]  : customer.try(:devices[:orange][:username])
+    passwd  = params[:orange_password]  ? params[:orange_password]  : customer.try(:devices[:orange][:password])
+
+   send_request list_operations(customer, { auth: { user: user, password: passwd } })
   end
 
   def list_devices(customer, params)

@@ -94,6 +94,20 @@ class V01::Vehicles < Grape::API
       vehicles = customer.vehicles.find params[:ids]
       positions = []
       errors = []
+      ## MASTERNAUT
+      begin
+        if customer.masternaut?
+          (MasternautService.new(customer: customer).get_vehicles_pos || []).each do |item|
+            vehicle_id = item.delete :masternaut_vehicle_id
+            vehicle = vehicles.detect{ |v| v.masternaut_ref == vehicle_id }
+            next if !vehicle
+            positions << item.merge(vehicle_id: vehicle.id)
+          end
+        end
+      rescue DeviceServiceError => e
+        errors << e.message
+      end
+      ## ORANGE
       begin
         if customer.orange?
           (OrangeService.new(customer: customer).get_vehicles_pos || []).each do |item|
@@ -106,6 +120,7 @@ class V01::Vehicles < Grape::API
       rescue DeviceServiceError => e
         errors << e.message
       end
+      ## TEKSAT
       begin
         if customer.teksat?
           teksat_authenticate customer
@@ -119,6 +134,7 @@ class V01::Vehicles < Grape::API
       rescue DeviceServiceError => e
         errors << e.message
       end
+      ## TOMTOM
       begin
         if customer.tomtom?
           (TomtomService.new(customer: customer).get_vehicles_pos || []).each do |item|

@@ -25,3 +25,5 @@ coverage
 config/initializers/dev.rb
 .ruby-gemset
 .ruby-version
+config/initializers/mapotempo.rb
+config/initializers/rack_profiler.rb

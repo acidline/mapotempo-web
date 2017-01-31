@@ -52,5 +52,7 @@
  *= require leaflet.markercluster.default
  *= require leaflet-sidebar
  *= require pnotify
+ *= require bootstrap.vertical-tabs
+ *= require awesome-bootstrap-checkbox
  *= require_tree .
  */

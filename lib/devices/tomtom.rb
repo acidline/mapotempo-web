@@ -20,26 +20,53 @@ class Tomtom < DeviceBase
 
   class TomTomServiceBusyError < StandardError; end
 
+  def get_device_definition
+    {
+      device: 'tomtom',
+      label: 'Tomtom',
+      image_url: 'https://www.macupdate.com/images/icons256/21813.png',
+      has_sync: true,
+      translate: {
+        enable: 'activerecord.attributes.customer.devices.tomtom.enable',
+        help: 'customers.form.devices.tomtom_help',
+        sync: 'customers.form.devices.sync.tomtom.action'
+      },
+      form: [
+        [:text, 'account'],
+        [:text, 'username'],
+        [:password, 'password']
+      ]
+    }
+  end
+
+  def check_auth(params, customer)
+    account = params[:tomtom_account]   ? params[:tomtom_account]   : customer.try(:devices[:tomtom][:account])
+    user    = params[:tomtom_username]  ? params[:tomtom_username]  : customer.try(:devices[:tomtom][:username])
+    passwd  = params[:tomtom_password]  ? params[:tomtom_password]  : customer.try(:devices[:tomtom][:password])
+
+    list_devices customer, { auth: { account: account, user: user, password: passwd } }
+  end
+
   def savon_client_objects
     @client_objects ||= Savon.client(wsdl: api_url + '/objectsAndPeopleReportingService?wsdl', multipart: true, soap_version: 2, open_timeout: 60, read_timeout: 60) do
-      #log true
-      #pretty_print_xml true
+      # log true
+      # pretty_print_xml true
       convert_request_keys_to :none
     end
   end
 
   def savon_client_address
     @client_address ||= Savon.client(wsdl: api_url + '/addressService?wsdl', multipart: true, soap_version: 2, open_timeout: 60, read_timeout: 60) do
-      #log true
-      #pretty_print_xml true
+      # log true
+      # pretty_print_xml true
       convert_request_keys_to :none
     end
   end
 
   def savon_client_orders
     @client_orders ||= Savon.client(wsdl: api_url + '/ordersService?wsdl', multipart: true, soap_version: 2, open_timeout: 60, read_timeout: 60) do
-      #log true
-      #pretty_print_xml true
+      # log true
+      # pretty_print_xml true
       convert_request_keys_to :none
     end
   end
@@ -263,10 +290,11 @@ class Tomtom < DeviceBase
   private
 
   def get(customer, client, operation, message={}, options={}, ignore_busy = false, ignore_addresses_empty_result = false)
+
     if options[:auth]
       account, username, password = options[:auth][:account], options[:auth][:user], options[:auth][:password]
     else
-      account, username, password = customer.tomtom_account, customer.tomtom_user, customer.tomtom_password
+      account, username, password = customer.devices[:tomtom][:account], customer.devices[:tomtom][:username], customer.devices[:tomtom][:password]
     end
 
     message[:order!] = [:aParm, :gParm] + (message[:order!] || (message.keys - [:attributes!]))
@@ -416,4 +444,5 @@ class Tomtom < DeviceBase
       sufix.to_i(36).to_s
     end
   end
+
 end

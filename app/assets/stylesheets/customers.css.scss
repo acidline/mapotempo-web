@@ -37,4 +37,53 @@
       }
     }
   }
+
+  .btn-device {
+    white-space: normal !important;
+    /*width: 120px;*/
+    /*height: 120px;*/
+    border:1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 0 0 15px 0;
+  }
+
+  .btn-device img {
+    height: 24px;
+    margin:0 0 15px 0;
+  }
+
+  .panel-heading .accordion-toggle:after {
+    font-family: 'FontAwesome';
+    content: "\f078";
+    float: right;
+    color: grey;
+  }
+  .panel-heading .accordion-toggle.collapsed:after {
+    content: "\f054";
+  }
+
+  .device-ok:after {
+    font-family: 'FontAwesome';
+    float: right;
+    content: "\f00c";
+    color: #3c763d;
+    font-weight: bold;
+  }
+  .device-notok:after {
+    font-family: 'FontAwesome';
+    float: right;
+    content: "\f00d";
+    color: #a94442;
+    font-weight: bold;
+  }
+
+  .device-notok.api-error:after {
+    font-family: 'FontAwesome';
+    float: right;
+    content: '\f0ec';
+    color: #31708f;
+    font-weight: bold;
+  }
+
 }

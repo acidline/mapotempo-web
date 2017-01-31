@@ -1,0 +1,2 @@
+class TrimbleService < DeviceService
+end

@@ -21,9 +21,9 @@ class OrangeService < DeviceService
   end
 
   def list_devices(params = {})
-    with_cache [:list_devices, service_name, customer.id, customer.orange_user] do
+    #with_cache [:list_devices, service_name, customer.id, customer.orange_user] do
       service.list_devices customer, params
-    end
+    #end
   end
 
   def get_vehicles_pos

@@ -94,7 +94,7 @@ class Vehicle < ActiveRecord::Base
 
   def available_position?
     customer.enable_vehicle_position? &&
-      ((!tomtom_id.blank? && customer.tomtom?) || (!teksat_id.blank? && customer.teksat?) || (!orange_id.blank? && customer.orange?))
+      ((!tomtom_id.blank? && customer.tomtom?) || (!teksat_id.blank? && customer.teksat?) || (!orange_id.blank? && customer.orange?) || (!masternaut_ref.blank? && customer.masternaut?))
   end
 
   def default_capacities

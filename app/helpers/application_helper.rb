@@ -15,6 +15,9 @@
 # along with Mapotempo. If not, see:
 # <http://www.gnu.org/licenses/agpl.html>
 #
+require "awesome_print"
+require "value_to_boolean"
+
 module ApplicationHelper
   def span_tag(content)
     content_tag :span, content, class: 'default-color'
@@ -50,4 +53,79 @@ module ApplicationHelper
 
     number_to_human(distance, options)
   end
+
+  def to_bool(str)
+    ValueToBoolean.value_to_boolean str
+  end
+
+end
+
+
+def dump(object, label = nil)
+
+  time = Time.new
+  debugdateTime = "DEBUG : " + time.strftime("%Y-%m-%d %H:%M:%S")
+  debugdateTimeColored = "#{colorize(debugdateTime, "white", "light red")}"
+
+  case object
+    when String
+      puts debugdateTimeColored + " : " + colorize(object, "yellow")
+
+    else
+      if !label.nil?
+        puts debugdateTimeColored + "\n #{colorize(label, "yellow")}"  + "\n"
+      else
+        puts debugdateTimeColored + " : \n"
+      end
+      ap object
+      puts "\n"
+  end
+
+end
+
+def colorize(text, color = "default", bgColor = "default")
+
+    colors = {
+      "default" => "38",
+      "black" => "30",
+      "red" => "31",
+      "green" => "32",
+      "brown" => "33",
+      "blue" => "34",
+      "purple" => "35",
+      "cyan" => "36",
+      "gray" => "37",
+      "dark gray" => "1;30",
+      "light red" => "1;31",
+      "light green" => "1;32",
+      "yellow" => "1;33",
+      "light blue" => "1;34",
+      "light purple" => "1;35",
+      "light cyan" => "1;36",
+      "white" => "1;37"
+    }
+    bgColors = {
+      "default" => "0",
+      "black" => "40",
+      "red" => "41",
+      "green" => "42",
+      "brown" => "43",
+      "blue" => "44",
+      "purple" => "45",
+      "cyan" => "46",
+      "gray" => "47",
+      "dark gray" => "100",
+      "light red" => "101",
+      "light green" => "102",
+      "yellow" => "103",
+      "light blue" => "104",
+      "light purple" => "105",
+      "light cyan" => "106",
+      "white" => "107"
+    }
+
+    color_code = colors[color]
+    bgColor_code = bgColors[bgColor]
+    return "\033[#{bgColor_code};#{color_code}m#{text}\033[0m"
+
 end

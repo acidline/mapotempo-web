@@ -20,7 +20,7 @@ class V01::Devices::Teksat < Grape::API
     namespace :teksat do
       before do
         @customer = current_customer params[:customer_id]
-        teksat_authenticate @customer
+        authenticate :teksat, @customer
       end
 
       rescue_from DeviceServiceError do |e|

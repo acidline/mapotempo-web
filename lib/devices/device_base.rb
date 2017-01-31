@@ -15,7 +15,30 @@
 # along with Mapotempo. If not, see:
 # <http://www.gnu.org/licenses/agpl.html>
 #
+module Interface
+
+  class InterfaceNotImplementedError < NoMethodError
+  end
+
+  def method(name)
+    define_method(name) { |*args|
+			raise Interface::InterfaceNotImplementedError.new("#{self.class.name} needs to implement '#{name}' for interface DeviceInterface !")
+    }
+  end
+
+end
+
+module DeviceInterface
+  extend Interface
+  method :get_device_definition
+  method :check_auth
+end
+
+
 class DeviceBase
+
+	include DeviceInterface
+
   attr_accessor :api_url, :api_key
 
   def planning_date(planning)
@@ -25,6 +48,7 @@ class DeviceBase
   def p_time(route, time)
     planning_date(route.planning) + (time.utc - Time.utc(2000, 1, 1, 0, 0))
   end
+
 end
 
 class DeviceServiceError < StandardError; end

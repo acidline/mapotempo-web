@@ -32,6 +32,14 @@ class V01::Devices::Masternaut < Grape::API
         end
       end
 
+      desc 'Validate Masternaut Credentials',
+        detail: 'Validate Masternaut Credentials',
+        nickname: 'deviceMasternautAuth'
+      get '/auth' do
+        authenticate :masternaut, @customer
+        status 204
+      end
+
       desc 'Send Route',
         detail: 'Send Route',
         nickname: 'deviceMasternautSend'

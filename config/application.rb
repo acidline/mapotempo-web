@@ -10,7 +10,7 @@ require_relative '../lib/optim/ort'
 require_relative '../lib/optim/optimizer_wrapper'
 
 require_relative '../lib/devices/device_base'
-['alyacom', 'masternaut', 'orange', 'teksat', 'tomtom'].each{|name|
+['alyacom', 'masternaut', 'orange', 'teksat', 'tomtom', 'trimble', 'locster', 'suiviDeFlotte'].each{|name|
   require_relative "../lib/devices/#{name}"
 }
 
@@ -84,7 +84,16 @@ module Mapotempo
     # Option to display or not orders in Admin (not available in API)
     config.customer_test_default = true
 
-    config.devices = OpenStruct.new alyacom: Alyacom.new, masternaut: Masternaut.new, orange: Orange.new, teksat: Teksat.new, tomtom: Tomtom.new
+    config.devices = OpenStruct.new(
+      alyacom: Alyacom.new,
+      masternaut: Masternaut.new,
+      orange: Orange.new,
+      teksat: Teksat.new,
+      tomtom: Tomtom.new,
+      trimble: Trimble.new,
+      locster: Locster.new,
+      suiviDeFlotte: SuiviDeFlotte.new
+    )
   end
 end
 

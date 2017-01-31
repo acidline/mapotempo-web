@@ -42,6 +42,7 @@ Rails.application.configure do
   # Application config
 
   config.action_mailer.default_url_options = {host: 'localhost'}
+  config.action_mailer.delivery_method = :letter_opener
 
   config.default_from_mail = 'root@localhost'
 
@@ -50,7 +51,7 @@ Rails.application.configure do
   config.api_contact_url = 'https://github.com/Mapotempo/mapotempo-web'
 
   def cache_factory(namespace, expires_in)
-    ActiveSupport::Cache::FileStore.new(File.join(Dir.tmpdir, namespace), namespace: namespace, expires_in: expires_in)
+    ActiveSupport::Cache::FileStore.new(File.join('/home/nicolas/tmp/mapotempo/', namespace), namespace: namespace, expires_in: expires_in)
   end
 
   # config.optimize = Ort.new(
@@ -75,7 +76,7 @@ Rails.application.configure do
   config.geocode_complete = false # Build time setting
 
   require 'geocode_addok_wrapper'
-  config.geocode_geocoder = GeocodeAddokWrapper.new('https://geocode.mapotempo.com/0.1', 'secret_api_key')
+  config.geocode_geocoder = GeocodeAddokWrapper.new('http://geocode.beta.mapotempo.com/0.1', 'mapotempo-1-URIs98jpsSPNE6WAuocwqzDMzkljcX4A+yKSwinlM7w')
 
   config.router_osrm = Routers::Osrm.new(
     cache_factory('osrm_request', 60*60*24*1),
@@ -91,31 +92,34 @@ Rails.application.configure do
     'https://route.api.here.com/routing',
     'https://matrix.route.api.here.com/routing',
     'https://isoline.route.api.here.com/routing',
-    nil,
-    nil
+    'yihiGwg1ibLi0q6BfBOa',
+    '5GEGWZnjPAA-ZIwc7DF3Mw'
   )
   config.router_wrapper = Routers::RouterWrapper.new(
     cache_factory('router_wrapper_request', 60*60*24*1),
     cache_factory('router_wrapper_result', 60*60*24*1),
-    nil
+    'mapotempo-web-beta-d701e4a905fbd3c8d0600a2af433db8b'
   )
 
   config.devices.alyacom.api_url = 'http://partners.alyacom.fr/ws'
   config.devices.masternaut.api_url = 'http://ws.webservices.masternaut.fr/MasterWS/services'
   config.devices.orange.api_url = 'https://m2m-services.ft-dm.com'
   config.devices.tomtom.api_url = 'https://soap.business.tomtom.com/v1.30'
-  config.devices.tomtom.api_key = nil
-  config.devices.cache_object = cache_factory('devices', 30)
+  config.devices.tomtom.api_key = '23ca1c50-2458-46f7-829f-27d476c30686'
+  config.devices.trimble.api_url = 'https://soap.box.trimbletl.com/jboss-net/services'
 
-  config.delayed_job_use = true
+  # config.devices.cache_object = cache_factory('devices', 30)
 
-  config.self_care = true # Allow subscription and resiliation by the user himself
+  config.delayed_job_use = false
+
+  config.self_care = false # Allow subscription and resiliation by the user himself
 
   config.max_destinations = 3000
-  config.max_destinations_editable = 500
-  config.manage_vehicles_only_admin = false
 
-  config.enable_references = true
+  config.max_destinations_editable = 500
+  config.manage_vehicles_only_admin = true
+
+  config.enable_references = false
   config.enable_multi_visits = false
 
   # N 1 Queries: display only in log or console
@@ -128,4 +132,11 @@ Rails.application.configure do
     Bullet.add_footer           = false
     Bullet.counter_cache_enable = true
   end
+
+end
+
+Mapotempo::Application.config.default_from_mail = 'robot@mapotempo.com'
+
+Devise.setup do |config|
+  config.mailer_sender = 'robot@mapotempo.com'
 end

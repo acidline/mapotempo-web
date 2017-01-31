@@ -20,6 +20,46 @@ require 'addressable'
 class Teksat < DeviceBase
   attr_accessor :ticket_id
 
+  def get_device_definition
+    {
+      device: 'teksat',
+      label: 'Teksat',
+      image_url: 'https://www.teksat.fr/wp-content/uploads/2016/06/logo-teksat.png',
+      has_sync: true,
+      translate: {
+        enable: 'activerecord.attributes.customer.devices.teksat.enable',
+        help: 'customers.form.devices.teksat_help',
+        sync: 'customers.form.devices.sync.teksat.action'
+      },
+      form: [
+        [:text, 'customer_id'],
+        [:text, 'url'],
+        [:text, 'username'],
+        [:password, 'password']
+      ]
+    }
+  end
+
+  def check_auth(params, customer)
+
+    url          = params[:teksat_url]         ? params[:teksat_url]         : customer.try(:devices[:teksat][:url])
+    customer_id  = params[:teksat_customer_id] ? params[:teksat_customer_id] : customer.try(:devices[:teksat][:customer_id])
+    username     = params[:teksat_username]    ? params[:teksat_username]    : customer.try(:devices[:teksat][:username])
+    password     = params[:teksat_password]    ? params[:teksat_password]    : customer.try(:devices[:teksat][:password])
+
+    auth = { auth: { url: url, customer_id: customer_id, username: username, password: password } }
+
+    response = RestClient.get get_ticket_url(customer, auth)
+    if response.code == 200 && response.strip.length >= 1
+      return response.strip
+    else
+      raise DeviceServiceError.new('Teksat: %s' % [I18n.t('errors.teksat.get_ticket')])
+    end
+  rescue RestClient::Forbidden, RestClient::InternalServerError
+    raise DeviceServiceError.new('Teksat: %s' % [I18n.t('errors.teksat.unauthorized')])
+
+  end
+
   def authenticate(customer, params)
     response = RestClient.get get_ticket_url(customer, { auth: params.slice(:url, :customer_id, :username, :password) })
     if response.code == 200 && response.strip.length >= 1

@@ -25,9 +25,9 @@ class TomtomService < DeviceService
   end
 
   def list_devices
-    with_cache [:list_devices, service_name, customer.id, customer.tomtom_user] do
+    #with_cache [:list_devices, service_name, customer.id, customer.tomtom_user] do
       service.list_devices customer
-    end
+    #end
   end
 
   def get_vehicles_pos

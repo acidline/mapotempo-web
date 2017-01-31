@@ -98,6 +98,7 @@ var customers_index = function(params) {
 };
 
 var customers_edit = function(params) {
+  
   /* Speed Multiplier */
   $('form.number-to-percentage').submit(function(e) {
     $.each($(e.target).find('input[type=\'number\'].number-to-percentage'), function(i, element) {
@@ -139,6 +140,7 @@ var customers_edit = function(params) {
       fa: true
     }
   });
+
 };
 
 Paloma.controller('Customers', {

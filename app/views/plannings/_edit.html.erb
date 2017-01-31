@@ -214,6 +214,7 @@ layers = (current_user.customer.profile.layers + [current_user.layer]).sort_by(&
   }
 }
 
+
 controller.js(
   manage_planning: @manage_planning,
   prefered_unit: current_user.prefered_unit,
@@ -232,6 +233,6 @@ controller.js(
   spreadsheet_columns: @spreadsheet_columns,
   isoline_capability: {isochrone: @isochrone_capability ? true : false, isodistance: @isodistance_capability ? true : false},
   enable_stop_status: @planning.customer.enable_stop_status,
-  update_stop_status: @planning.customer.enable_stop_status? && (@planning.date.nil? || @planning.date.between?(Time.now.beginning_of_day, Time.now.end_of_day)) && @planning.customer.enable_tomtom && @planning.routes.any?{ |r| r.vehicle_usage && r.vehicle_usage.vehicle.tomtom_id }
+  update_stop_status: @planning.customer.enable_stop_status? && (@planning.date.nil? || @planning.date.between?(Time.now.beginning_of_day, Time.now.end_of_day)) && @planning.customer.devices['tomtom']['enable'] && @planning.routes.any?{ |r| r.vehicle_usage && r.vehicle_usage.vehicle.tomtom_id }
 )
 %>

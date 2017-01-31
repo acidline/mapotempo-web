@@ -36,7 +36,7 @@ class V01::Devices::Alyacom < Grape::API
         detail: 'Validate Alyacom Credentials',
         nickname: 'deviceAlyacomAuth'
       get '/auth' do
-        alyacom_authenticate @customer
+        authenticate :alyacom, @customer
         status 204
       end
 

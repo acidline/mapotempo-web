@@ -15,4 +15,10 @@
 # along with Mapotempo. If not, see:
 # <http://www.gnu.org/licenses/agpl.html>
 #
-class MasternautService < DeviceService; end
+class MasternautService < DeviceService
+
+  def check_auth(params)
+    service.check_auth customer, params
+  end
+
+end

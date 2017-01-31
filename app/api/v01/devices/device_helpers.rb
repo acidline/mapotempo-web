@@ -15,8 +15,11 @@
 # along with Mapotempo. If not, see:
 # <http://www.gnu.org/licenses/agpl.html>
 #
+require "awesome_print"
+
 module Devices
   module Helpers
+
     def device_send_route(options = {})
       Route.transaction do
         route = Route.for_customer(@customer).find params[:route_id]
@@ -61,6 +64,19 @@ module Devices
       present routes, with: V01::Entities::DeviceRouteLastSentAt
     end
 
+    def authenticate(device, customer)
+      devices = @customer.get_enabled_devices_list
+
+      if !devices.key?(device)
+        raise "#{device} not enabled"
+      end
+
+      device_object = Mapotempo::Application.config.devices[device]
+      device_object.check_auth(params, customer)
+    end
+
+
+    # ORANGE
     def orange_fleet_authenticate(customer)
       OrangeService.new(customer: customer).test_list orange_credentials(customer)
     end
@@ -80,6 +96,8 @@ module Devices
       end
     end
 
+
+    # TEKSAT
     def teksat_authenticate(customer)
       if params[:check_only].to_i == 1 || !session[:teksat_ticket_id] || (Time.now - Time.at(session[:teksat_authenticated_at])) > 3.hours
         ticket_id = TeksatService.new(customer: customer).authenticate teksat_credentials(customer)
@@ -105,17 +123,8 @@ module Devices
       end
     end
 
-    def tomtom_authenticate(customer)
-      TomtomService.new(customer: customer).test_list tomtom_credentials(customer)
-    end
 
-    def tomtom_credentials(customer)
-      account = params[:tomtom_account]  ? params[:tomtom_account]   : customer.try(:tomtom_account)
-      user    = params[:tomtom_user]     ? params[:tomtom_user]      : customer.try(:tomtom_user)
-      passwd  = params[:tomtom_password] ? params[:tomtom_password]  : customer.try(:tomtom_password)
-      { account: account, user: user, password: passwd }
-    end
-
+    # TOMTOM
     def tomtom_sync_vehicles(customer)
       tomtom_vehicles = TomtomService.new(customer: customer).list_vehicles tomtom_credentials(customer)
       tomtom_vehicles = tomtom_vehicles.select{ |item| !item[:objectUid].blank? }
@@ -126,6 +135,8 @@ module Devices
       end
     end
 
+
+    # ALYACOM
     def alyacom_credentials(customer)
       alyacom_association = params[:alyacom_association] ? params[:alyacom_association] : customer.try(:alyacom_association)
       alyacom_api_key     = params[:alyacom_api_key]     ? params[:alyacom_api_key]     : customer.try(:alyacom_api_key)
@@ -135,5 +146,6 @@ module Devices
     def alyacom_authenticate(customer)
       AlyacomService.new(customer: customer).test_list alyacom_credentials(customer)
     end
+
   end
 end

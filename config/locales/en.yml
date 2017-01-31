@@ -624,6 +624,7 @@ en:
       vehicles:
         list: "Vehicles list"
       time_zone: "Time Zone"
+      devices: "GPS & Mobiles Exports"
     index:
       title: "Listing accounts"
       new: "New Account"
@@ -650,16 +651,6 @@ en:
       optimization_parameters: "Optimization settings"
       router_help: "Profile used by route plan by default"
       take_over_help: "Average time per account"
-      tomtom: "TomTom WEBFLEET"
-      tomtom_help: "Allows sending plans to TomTom Pro with WEBFLEET."
-      teksat: "Teksat"
-      teksat_help: "Send plans to Teksat devices"
-      orange: "Orange Fleet Performance"
-      orange_help: "Send plans to Orange Fleet Performance devices"
-      masternaut: "Masternaut"
-      masternaut_help: "Allows sending plans to Masternaut devices"
-      alyacom: "AlyaCom"
-      alyacom_help: "Allows sending plans to AlyaCom application"
       optimization_cluster_size_default: "%{n} (default value)"
       optimization_cluster_size_help: "Value in seconds between points to group before optimization. A great value will degrade optimization result (30 sec is already an important value). Take into account only for a single route optimization with delays."
       optimization_time_default: "%{n} (default value)"
@@ -673,17 +664,29 @@ en:
       speed_multiplicator_default: "%{n} (default value)"
       speed_multiplicator_help: "A value higher than 100% means higher speed."
       submit: "Update Global settings"
-      sync:
-        complete: "Sync Complete"
-        orange:
-          confirm: "Sync Vehicles from Orange Fleet Performance?"
-          action: "Sync Vehicles from Orange Fleet Performance"
-        tomtom:
-          confirm: "Sync Vehicles from TomTom WebFLEET?"
-          action: "Sync Vehicles from TomTom WebFLEET"
-        teksat:
-          confirm: "Sync Vehicles from Teksat?"
-          action: "Sync Vehicles from Teksat"
+      devices:
+        tomtom: "TomTom WEBFLEET"
+        tomtom_help: "Allows sending plans to TomTom Pro with WEBFLEET."
+        teksat: "Teksat"
+        teksat_help: "Send plans to Teksat devices"
+        orange: "Orange Fleet Performance"
+        orange_help: "Send plans to Orange Fleet Performance devices"
+        masternaut: "Masternaut"
+        masternaut_help: "Allows sending plans to Masternaut devices"
+        alyacom: "AlyaCom"
+        alyacom_help: "Allows sending plans to AlyaCom application"
+        sync:
+          complete: "Sync Complete"
+          orange:
+            confirm: "Sync Vehicles from Orange Fleet Performance?"
+            action: "Sync Vehicles from Orange Fleet Performance"
+          tomtom:
+            confirm: "Sync Vehicles from TomTom WebFLEET?"
+            action: "Sync Vehicles from TomTom WebFLEET"
+          teksat:
+            confirm: "Sync Vehicles from Teksat?"
+            action: "Sync Vehicles from Teksat"
+        submit: "Save configuration"
       external_callback:
         title: "Callback URL"
         name: "Name"

@@ -16,7 +16,40 @@
 # <http://www.gnu.org/licenses/agpl.html>
 #
 class Masternaut < DeviceBase
-  attr_reader :client_poi, :client_job
+  
+  attr_reader :client_poi, :client_job, :client_geoloc
+
+  def get_device_definition
+    {
+      device: 'masternaut',
+      label: 'Masternaut',
+      image_url: 'http://www.cogemathieu.fr/wp-content/uploads/2016/02/masternaut.png',
+      has_sync: false,
+      translate: {
+        enable: 'activerecord.attributes.customer.devices.masternaut.enable',
+        help: 'customers.form.devices.masternaut_help'
+      },
+      form: [
+        [:text, 'username'],
+        [:password, 'password']
+      ]
+    }
+  end
+
+  def check_auth(params, customer)
+
+    user    = params[:masternaut_username]  ? params[:masternaut_username]  : customer.try(:devices[:masternaut][:username])
+    passwd  = params[:masternaut_password]  ? params[:masternaut_password]  : customer.try(:devices[:masternaut][:password])
+
+    client ||= Savon.client(basic_auth: [user, passwd], wsdl: api_url + '/Resources?wsdl', multipart: true, soap_version: 1) do
+      # log true
+      # pretty_print_xml true
+      convert_request_keys_to :none
+    end
+
+    get(client, nil, :get_vehicle_group_list, {}, {})
+
+  end
 
   def savon_client_poi(customer)
     @client_poi ||= Savon.client(basic_auth: [customer.masternaut_user, customer.masternaut_password], wsdl: api_url + '/POI?wsdl', soap_version: 1) do
@@ -28,6 +61,14 @@ class Masternaut < DeviceBase
 
   def savon_client_job(customer)
     @client_job ||= Savon.client(basic_auth: [customer.masternaut_user, customer.masternaut_password], wsdl: api_url + '/Job?wsdl', multipart: true, soap_version: 1) do
+      #log true
+      #pretty_print_xml true
+      convert_request_keys_to :none
+    end
+  end
+
+  def savon_client_geoloc(customer)
+    @client_geoloc ||= Savon.client(basic_auth: [customer.masternaut_user, customer.masternaut_password], wsdl: api_url + '/Geoloc?wsdl', soap_version: 1) do
       #log true
       #pretty_print_xml true
       convert_request_keys_to :none
@@ -85,6 +126,10 @@ class Masternaut < DeviceBase
     '26' => 'an error occurred while creating the job item',
   }
 
+  @@error_code_geoloc = {
+
+  }
+
   def send_route(customer, route, _options = {})
     order_id_base = Time.now.to_i.to_s(36) + '_' + route.id.to_s
     customer = route.planning.customer
@@ -122,6 +167,17 @@ class Masternaut < DeviceBase
     if !position.nil? && !position.lat.nil? && !position.lng.nil?
       createJobRoute customer, route.vehicle_usage.vehicle.masternaut_ref, order_id_base, route.ref || route.vehicle_usage.vehicle.name, route.planning.date || Time.zone.today, route.start, route.end, waypoints
     end
+  end
+
+  def get_vehicles_pos(customer, vehicleRef)
+    
+    params = {
+      vehicle_reference: vehicleRef,
+      geoloc: true
+    }
+    
+    get(savon_client_geoloc(customer), 200, :get_vehicle_last_position, params, @@error_code_geoloc)
+
   end
 
   private
@@ -235,7 +291,6 @@ class Masternaut < DeviceBase
 
   def get(client, no_error_code, operation, message = {}, error_code)
     response = client.call(operation, message: message)
-
     op_response = (operation.to_s + '_response').to_sym
     op_return = (operation.to_s + '_return').to_sym
     if no_error_code && response.body[op_response] && response.body[op_response][op_return] != no_error_code.to_s

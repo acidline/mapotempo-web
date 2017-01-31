@@ -18,6 +18,7 @@
 'use strict';
 
 $(document).on('ready page:load', function() {
+
   $('.index_toggle_selection').click(function() {
     $('input:checkbox').each(function() {
       this.checked = !this.checked;
@@ -160,6 +161,8 @@ var mapInitialize = function(params) {
 
 var customColorInitialize = function(selecter){
   $('#customised_color_picker').click(function(){
+
+    alert("colorize");
 
       var colorPicker = $('#color_picker'), options_wrap = $(selecter + ' option[selected="selected"]');
 

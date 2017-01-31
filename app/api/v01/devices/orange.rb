@@ -36,7 +36,7 @@ class V01::Devices::Orange < Grape::API
         detail: 'Validate Orange Fleet Credentials',
         nickname: 'deviceMasternautAuth'
       get '/auth' do
-        orange_fleet_authenticate @customer
+        authenticate :orange, @customer
         status 204
       end
 

@@ -36,7 +36,7 @@ class V01::Devices::Tomtom < Grape::API
         detail: 'Validate TomTom WebFleet Credentials',
         nickname: 'deviceTomtomAuth'
       get '/auth' do
-        tomtom_authenticate @customer
+        authenticate :tomtom, @customer
         status 204
       end
 
