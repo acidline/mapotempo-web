@@ -25,16 +25,6 @@ class V01::Devices::Masternaut < Grape::API
         end
       end
 
-      desc 'Send Route',
-        detail: 'Send Route',
-        nickname: 'deviceMasternautSend'
-      params do
-        requires :route_id, type: Integer, desc: 'Route ID'
-      end
-      post '/send' do
-        device_send_route
-      end
-
       desc 'Send Planning Routes',
         detail: 'Send Planning Routes',
         nickname: 'deviceMasternautSendMultiple'

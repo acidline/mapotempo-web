@@ -32,20 +32,7 @@ class V01::Devices::Tomtom < Grape::API
         present Mapotempo::Application.config.devices[:tomtom].list_devices(@customer), with: V01::Entities::DeviceItem
       end
 
-      desc 'Send Route',
-        detail: 'Send Route',
-        nickname: 'deviceTomtomSend'
-      params do
-        requires :route_id, type: Integer, desc: 'Route ID'
-        requires :type, type: String, desc: 'Action Name', values: %w(waypoints orders)
-      end
-      post '/send' do
-        device_send_route params.slice(:type)
-      end
-
-      desc 'Send Planning Routes',
-        detail: 'Send Planning Routes',
-        nickname: 'deviceTomtomSendMultiple'
+      desc 'Send Planning Routes', detail: 'Send Planning Routes'
       params do
         requires :planning_id, type: Integer, desc: 'Planning ID'
         requires :type, type: String, desc: 'Action Name', values: %w(waypoints orders)

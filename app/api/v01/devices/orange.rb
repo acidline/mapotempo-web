@@ -32,16 +32,6 @@ class V01::Devices::Orange < Grape::API
         present service.list_devices, with: V01::Entities::DeviceItem
       end
 
-      desc 'Send Route',
-        detail: 'Send Route',
-        nickname: 'deviceOrangeSend'
-      params do
-        requires :route_id, type: Integer, desc: 'Route ID'
-      end
-      post '/send' do
-        device_send_route
-      end
-
       desc 'Send Planning Routes',
         detail: 'Send Planning Routes',
         nickname: 'deviceOrangeSendMultiple'

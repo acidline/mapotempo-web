@@ -28,22 +28,11 @@ class V01::Devices::Teksat < Grape::API
         end
       end
 
-
       desc 'List Devices',
         detail: 'List Devices',
         nickname: 'deviceTeksatList'
       get '/devices' do
         present service.list_devices, with: V01::Entities::DeviceItem
-      end
-
-      desc 'Send Route',
-        detail: 'Send Route',
-        nickname: 'deviceTeksatSend'
-      params do
-        requires :route_id, type: Integer, desc: 'Route ID'
-      end
-      post '/send' do
-        device_send_route
       end
 
       desc 'Send Planning Routes',
