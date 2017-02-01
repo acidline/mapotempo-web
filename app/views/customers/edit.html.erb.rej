@@ -1,0 +1,10 @@
+--- app/views/customers/edit.html.erb
++++ app/views/customers/edit.html.erb
+@@ -169,6 +169,6 @@
+ <%
+ controller.js(
+   customer_id: @customer.id,
+-  devices: @customer.get_enabled_devices_list
++  devices: @customer.enabled_devices_list
+ )
+ %>

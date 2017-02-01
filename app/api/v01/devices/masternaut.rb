@@ -18,26 +18,11 @@
 class V01::Devices::Masternaut < Grape::API
   namespace :devices do
     namespace :masternaut do
-      before do
-        @customer = current_customer params[:customer_id]
-      end
-
-      rescue_from DeviceServiceError do |e|
-        error! e.message, 200
-      end
 
       helpers do
         def service
           MasternautService.new customer: @customer
         end
-      end
-
-      desc 'Validate Masternaut Credentials',
-        detail: 'Validate Masternaut Credentials',
-        nickname: 'deviceMasternautAuth'
-      get '/auth' do
-        authenticate :masternaut, @customer
-        status 204
       end
 
       desc 'Send Route',

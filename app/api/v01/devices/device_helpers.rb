@@ -15,8 +15,6 @@
 # along with Mapotempo. If not, see:
 # <http://www.gnu.org/licenses/agpl.html>
 #
-require "awesome_print"
-
 module Devices
   module Helpers
 
@@ -65,12 +63,10 @@ module Devices
     end
 
     def authenticate(device, customer)
-      devices = @customer.get_enabled_devices_list
-
+      devices = @customer.enabled_devices_list
       if !devices.key?(device)
         raise "#{device} not enabled"
       end
-
       device_object = Mapotempo::Application.config.devices[device]
       device_object.check_auth(params, customer)
     end

@@ -19,12 +19,7 @@ class V01::Devices::Teksat < Grape::API
   namespace :devices do
     namespace :teksat do
       before do
-        @customer = current_customer params[:customer_id]
         authenticate :teksat, @customer
-      end
-
-      rescue_from DeviceServiceError do |e|
-        error! e.message, 200
       end
 
       helpers do
@@ -33,12 +28,6 @@ class V01::Devices::Teksat < Grape::API
         end
       end
 
-      desc 'Validate Teksat Credentials',
-        detail: 'Validate Teksat Credentials',
-        nickname: 'deviceTeksatAuth'
-      get '/auth' do
-        status 204
-      end
 
       desc 'List Devices',
         detail: 'List Devices',

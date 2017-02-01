@@ -18,13 +18,6 @@
 class V01::Devices::Tomtom < Grape::API
   namespace :devices do
     namespace :tomtom do
-      before do
-        @customer = current_customer params[:customer_id]
-      end
-
-      rescue_from DeviceServiceError do |e|
-        error! e.message, 200
-      end
 
       helpers do
         def service
@@ -32,19 +25,11 @@ class V01::Devices::Tomtom < Grape::API
         end
       end
 
-      desc 'Validate TomTom WebFleet Credentials',
-        detail: 'Validate TomTom WebFleet Credentials',
-        nickname: 'deviceTomtomAuth'
-      get '/auth' do
-        authenticate :tomtom, @customer
-        status 204
-      end
-
       desc 'List Devices',
         detail: 'List Devices',
         nickname: 'deviceTomtomList'
       get '/devices' do
-        present service.list_devices, with: V01::Entities::DeviceItem
+        present Mapotempo::Application.config.devices[:tomtom].list_devices(@customer), with: V01::Entities::DeviceItem
       end
 
       desc 'Send Route',

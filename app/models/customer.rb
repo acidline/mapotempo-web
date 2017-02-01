@@ -225,7 +225,7 @@ class Customer < ActiveRecord::Base
     devices[device.to_sym][key.to_sym]
   end
 
-  def get_enabled_devices_list
+  def enabled_devices_list
     devices.select{ |device, conf| conf[:enable] == "true" }
   end
 

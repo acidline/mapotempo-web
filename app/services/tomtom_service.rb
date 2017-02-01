@@ -20,16 +20,6 @@ class TomtomService < DeviceService
     'TomTom'
   end
 
-  def test_list(params)
-    service.test_list customer, params
-  end
-
-  def list_devices
-    #with_cache [:list_devices, service_name, customer.id, customer.tomtom_user] do
-      service.list_devices customer
-    #end
-  end
-
   def get_vehicles_pos
     with_cache [:get_vehicles_pos, service_name, customer.id, customer.tomtom_user] do
       service.get_vehicles_pos customer
