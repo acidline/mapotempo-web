@@ -19,7 +19,6 @@ class V01::Devices::DevicesApi < Grape::API
         end
       end
 
-
     end
 
     # BEFORE ACTION CALL

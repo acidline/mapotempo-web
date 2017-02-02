@@ -25,6 +25,10 @@ class V01::Devices::Alyacom < Grape::API
         end
       end
 
+      before do
+        @customer = current_customer(params[:customer_id])
+      end
+
       desc 'Send Planning Routes',
         detail: 'Send Planning Routes',
         nickname: 'deviceAlyacomSendMultiple'

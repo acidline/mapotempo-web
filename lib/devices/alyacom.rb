@@ -26,7 +26,7 @@ class Alyacom < DeviceBase
     {
       device: 'alyacom',
       label: 'Alyacom',
-      image_url: 'http://www.alyacom.fr/wp-content/uploads/2013/05/Logo-AlyaCom-small-300x247.png',
+      image_url: 'http://alyacom.fr/wp-content/uploads/2016/12/cropped-cropped-Logo-ALYACOM-FR.png',
       has_sync: false,
       translate: {
         enable: 'activerecord.attributes.customer.devices.alyacom.enable',

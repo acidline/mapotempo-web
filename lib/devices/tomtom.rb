@@ -111,10 +111,6 @@ class Tomtom < DeviceBase
     'Finished' => 'Finished',
   }
 
-  def test_list(customer, params)
-    list_devices customer, { auth: params.slice(:account, :user, :password) }
-  end
-
   def list_devices(customer, params = {})
     objects = get customer, savon_client_objects, :show_object_report, {}, params
     objects = [objects] if objects.is_a?(Hash)

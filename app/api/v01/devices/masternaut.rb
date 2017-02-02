@@ -25,6 +25,10 @@ class V01::Devices::Masternaut < Grape::API
         end
       end
 
+      before do
+        @customer = current_customer(params[:customer_id])
+      end
+
       desc 'Send Planning Routes',
         detail: 'Send Planning Routes',
         nickname: 'deviceMasternautSendMultiple'

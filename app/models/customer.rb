@@ -65,9 +65,32 @@ class Customer < ActiveRecord::Base
   before_save :sanitize_print_header
   
   # ==> NICOLAS TEST before_save :devices_update_vehicles, prepend: true
-  # serialize :devices, HashWithIndifferentAccess
 
   include RefSanitizer
+
+  def initialize
+
+    # Alias / Shortcut to check_device
+    # get_devices_list.each do |device|
+    #   method_name = device[:device].to_s + '?'
+    #   define_method(method_name) {
+    #     check_device(device[:device].to_sym)
+    #   }
+    # end
+
+  end
+
+  define_method(:tomtom?) {
+    check_device(:tomtom)
+  }
+
+  define_method(:orange?) {
+    check_device(:orange)
+  }
+
+  define_method(:teksat?) {
+    check_device(:teksat)
+  }
 
   amoeba do
     nullify :job_destination_geocoding_id
@@ -238,49 +261,13 @@ class Customer < ActiveRecord::Base
   end
 
   def check_device(device_name)
-    enabled_devices = get_enabled_devices_list
     active = false
-
-    if enabled_devices.key?(device_name)
-      enabled_devices[device_name].each{ |k, v| 
+    if enabled_devices_list.key?(device_name)
+      enabled_devices_list[device_name].each{ |k, v| 
         active = !v.blank? ? true : false;
       }
     end
-
     active
-  end
-
-  # Alias / Shortcut to check_device
-  def masternaut?
-    check_device :masternaut
-  end
-
-  def alyacom?
-    check_device :alyacom
-  end
-
-  def tomtom?
-    check_device :tomtom
-  end
-
-  def teksat?
-    check_device :teksat
-  end
-
-  def orange?
-    check_device :orange
-  end
-
-  def trimble?
-    check_device :trimble
-  end
-
-  def locster?
-    check_device :locster
-  end
-
-  def suiviDeFlotte?
-    check_device :suiviDeFlotte
   end
 
 

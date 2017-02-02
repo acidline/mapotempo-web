@@ -25,6 +25,10 @@ class V01::Devices::Orange < Grape::API
         end
       end
 
+      before do
+        @customer = current_customer(params[:customer_id])
+      end
+
       desc 'List Devices',
         detail: 'List Devices',
         nickname: 'deviceOrangeList'

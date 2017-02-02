@@ -25,11 +25,15 @@ class V01::Devices::Tomtom < Grape::API
         end
       end
 
+      before do
+        @customer = current_customer(params[:customer_id])
+      end
+
       desc 'List Devices',
         detail: 'List Devices',
         nickname: 'deviceTomtomList'
       get '/devices' do
-        present Mapotempo::Application.config.devices[:tomtom].list_devices(@customer), with: V01::Entities::DeviceItem
+         present service.list_devices, with: V01::Entities::DeviceItem
       end
 
       desc 'Send Planning Routes', detail: 'Send Planning Routes'

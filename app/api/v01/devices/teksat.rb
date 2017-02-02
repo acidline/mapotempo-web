@@ -19,7 +19,7 @@ class V01::Devices::Teksat < Grape::API
   namespace :devices do
     namespace :teksat do
       before do
-        authenticate :teksat, @customer
+        Mapotempo::Application.config.devices[:teksat].check_auth(:teksat, @customer)
       end
 
       helpers do
