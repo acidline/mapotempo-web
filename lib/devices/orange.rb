@@ -39,10 +39,10 @@ class Orange < DeviceBase
   end
 
   def check_auth(params, customer)
-    user    = params[:orange_username]  ? params[:orange_username]  : customer.try(:devices[:orange][:username])
-    passwd  = params[:orange_password]  ? params[:orange_password]  : customer.try(:devices[:orange][:password])
+    user    = params[:orange_username]  ? params[:orange_username]  : customer.devices[:orange][:username]
+    passwd  = params[:orange_password]  ? params[:orange_password]  : customer.devices[:orange][:password]
 
-   send_request list_operations(customer, { auth: { user: user, password: passwd } })
+    send_request list_operations(customer, { auth: { user: user, password: passwd } })
   end
 
   def list_devices(customer, params)
@@ -103,7 +103,7 @@ class Orange < DeviceBase
     if options[:auth]
       user, password = options[:auth][:user], options[:auth][:password]
     else
-      user, password = customer.orange_user, customer.orange_password
+      user, password = customer.devices[:orange][:username], customer.devices[:orange][:password]
     end
 
     # HTTP Request w/ SSL

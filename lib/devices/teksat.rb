@@ -18,6 +18,7 @@
 require 'addressable'
 
 class Teksat < DeviceBase
+
   attr_accessor :ticket_id
 
   def get_device_definition
@@ -41,27 +42,19 @@ class Teksat < DeviceBase
   end
 
   def check_auth(params, customer)
+    authenticate(customer, params)
+  end
 
-    url          = params[:teksat_url]         ? params[:teksat_url]         : customer.try(:devices[:teksat][:url])
-    customer_id  = params[:teksat_customer_id] ? params[:teksat_customer_id] : customer.try(:devices[:teksat][:customer_id])
-    username     = params[:teksat_username]    ? params[:teksat_username]    : customer.try(:devices[:teksat][:username])
-    password     = params[:teksat_password]    ? params[:teksat_password]    : customer.try(:devices[:teksat][:password])
+  def authenticate(customer, params)
+
+    url          = params[:teksat_url]         ? params[:teksat_url]         : customer.devices[:teksat][:url]
+    customer_id  = params[:teksat_customer_id] ? params[:teksat_customer_id] : customer.devices[:teksat][:customer_id]
+    username     = params[:teksat_username]    ? params[:teksat_username]    : customer.devices[:teksat][:username]
+    password     = params[:teksat_password]    ? params[:teksat_password]    : customer.devices[:teksat][:password]
 
     auth = { auth: { url: url, customer_id: customer_id, username: username, password: password } }
 
     response = RestClient.get get_ticket_url(customer, auth)
-    if response.code == 200 && response.strip.length >= 1
-      return response.strip
-    else
-      raise DeviceServiceError.new('Teksat: %s' % [I18n.t('errors.teksat.get_ticket')])
-    end
-  rescue RestClient::Forbidden, RestClient::InternalServerError
-    raise DeviceServiceError.new('Teksat: %s' % [I18n.t('errors.teksat.unauthorized')])
-
-  end
-
-  def authenticate(customer, params)
-    response = RestClient.get get_ticket_url(customer, { auth: params.slice(:url, :customer_id, :username, :password) })
     if response.code == 200 && response.strip.length >= 1
       return response.strip
     else
@@ -132,7 +125,7 @@ class Teksat < DeviceBase
     if options[:auth]
       url, customer_id, username, password = options[:auth][:url], options[:auth][:customer_id], options[:auth][:username], options[:auth][:password]
     else
-      url, customer_id, username, password = customer.teksat_url, customer.teksat_customer_id, customer.teksat_username, customer.teksat_password
+      url, customer_id, username, password = customer.devices[:teksat][:url], customer.devices[:teksat][:customer_id], customer.devices[:teksat][:username], customer.devices[:teksat][:password]
     end
     if (url =~ /\A(www.*.teksat.fr)\Z/).nil?
       raise DeviceServiceError.new('Teksat: %s' % [I18n.t('errors.teksat.bad_url')])
@@ -143,32 +136,33 @@ class Teksat < DeviceBase
   end
 
   def get_vehicles_url(customer)
-    Addressable::Template.new('http://%s/webservices/map/get-vehicles.jsp{?query*}' % [customer.teksat_url]).expand(
-      query: { custID: customer.teksat_customer_id, tck: ticket_id }
+    Addressable::Template.new('http://%s/webservices/map/get-vehicles.jsp{?query*}' % [customer.devices[:teksat][:url]]).expand(
+      query: { custID: customer.devices[:teksat][:customer_id], tck: ticket_id }
     ).to_s
   end
 
   def get_vehicles_pos_url(customer)
-    Addressable::Template.new('http://%s/webservices/map/get-vehicles-pos.jsp{?query*}' % [customer.teksat_url]).expand(
+    Addressable::Template.new('http://%s/webservices/map/get-vehicles-pos.jsp{?query*}' % [customer.devices[:teksat][:url]]).expand(
       query: { custID: customer.teksat_customer_id, tck: ticket_id }
     ).to_s
   end
 
   def set_mission_url(customer, options)
-    Addressable::Template.new('http://%s/webservices/map/set-mission.jsp{?query*}' % [customer.teksat_url]).expand(
-      query: options.merge(custID: customer.teksat_customer_id, tck: ticket_id)
+    Addressable::Template.new('http://%s/webservices/map/set-mission.jsp{?query*}' % [customer.devices[:teksat][:url]]).expand(
+      query: options.merge(custID: customer.devices[:teksat][:customer_id], tck: ticket_id)
     ).to_s
   end
 
   def get_missions_url(customer, options)
-    Addressable::Template.new('http://%s/webservices/map/get-missions.jsp{?query*}' % [customer.teksat_url]).expand(
-      query: options.merge(custID: customer.teksat_customer_id, tck: ticket_id)
+    Addressable::Template.new('http://%s/webservices/map/get-missions.jsp{?query*}' % [customer.devices[:teksat][:url]]).expand(
+      query: options.merge(custID: customer.devices[:teksat][:customer_id], tck: ticket_id)
     ).to_s
   end
 
   def delete_mission_url(customer, options)
-    Addressable::Template.new('http://%s/webservices/map/delete-mission.jsp{?query*}' % [customer.teksat_url]).expand(
-      query: options.merge(custID: customer.teksat_customer_id, tck: ticket_id)
+    Addressable::Template.new('http://%s/webservices/map/delete-mission.jsp{?query*}' % [customer.devices[:teksat][:url]]).expand(
+      query: options.merge(custID: customer.devices[:teksat][:customer_id], tck: ticket_id)
     ).to_s
   end
+
 end

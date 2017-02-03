@@ -68,28 +68,13 @@ class Customer < ActiveRecord::Base
 
   include RefSanitizer
 
-  def initialize
-
-    # Alias / Shortcut to check_device
-    # get_devices_list.each do |device|
-    #   method_name = device[:device].to_s + '?'
-    #   define_method(method_name) {
-    #     check_device(device[:device].to_sym)
-    #   }
-    # end
-
-  end
-
-  define_method(:tomtom?) {
-    check_device(:tomtom)
-  }
-
-  define_method(:orange?) {
-    check_device(:orange)
-  }
-
-  define_method(:teksat?) {
-    check_device(:teksat)
+  # Alias / Shortcut to check_device
+  Mapotempo::Application.config.devices.to_h.each{ |device_name, device_object|
+    method_name = device_name.to_s + '?'
+    dump(method_name)
+    define_method(method_name) {
+      check_device(device_name)
+    }
   }
 
   amoeba do

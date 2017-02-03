@@ -1548,6 +1548,8 @@ ou en effectuant un copier/coller de l'URL suivante : %{l} </p>\n
       service_time_start_addon: "avant"
       service_time_end_addon: "après"
       service_times_help: "Durées ajoutées avant le premier arrêt et après le dernier arrêt."
+      devices:
+        placeholder: "Sélectionner un appareil"
 
   vehicle_usage_sets:
     default:

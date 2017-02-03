@@ -38,8 +38,8 @@ class Masternaut < DeviceBase
 
   def check_auth(params, customer)
 
-    user    = params[:masternaut_username]  ? params[:masternaut_username]  : customer.try(:devices[:masternaut][:username])
-    passwd  = params[:masternaut_password]  ? params[:masternaut_password]  : customer.try(:devices[:masternaut][:password])
+    user    = params[:masternaut_username]  ? params[:masternaut_username]  : customer.devices[:masternaut][:username]
+    passwd  = params[:masternaut_password]  ? params[:masternaut_password]  : customer.devices[:masternaut][:password]
 
     client ||= Savon.client(basic_auth: [user, passwd], wsdl: api_url + '/Resources?wsdl', multipart: true, soap_version: 1) do
       # log true

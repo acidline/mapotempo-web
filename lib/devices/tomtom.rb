@@ -40,9 +40,9 @@ class Tomtom < DeviceBase
   end
 
   def check_auth(params, customer)
-    account = params[:tomtom_account]   ? params[:tomtom_account]   : customer.try(:devices[:tomtom][:account])
-    user    = params[:tomtom_username]  ? params[:tomtom_username]  : customer.try(:devices[:tomtom][:username])
-    passwd  = params[:tomtom_password]  ? params[:tomtom_password]  : customer.try(:devices[:tomtom][:password])
+    account = params[:tomtom_account]   ? params[:tomtom_account]   : customer.devices[:tomtom][:account]
+    user    = params[:tomtom_username]  ? params[:tomtom_username]  : customer.devices[:tomtom][:username]
+    passwd  = params[:tomtom_password]  ? params[:tomtom_password]  : customer.devices[:tomtom][:password]
 
     list_devices customer, { auth: { account: account, user: user, password: passwd } }
   end

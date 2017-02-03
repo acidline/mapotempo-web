@@ -40,8 +40,8 @@ class Alyacom < DeviceBase
   end
 
   def check_auth(params, customer)
-    api_key     = params[:alyacom_api_key]      ? params[:alyacom_api_key]      : customer.try(:devices[:alyacom][:api_key])
-    association = params[:alyacom_association]  ? params[:alyacom_association]  : customer.try(:devices[:alyacom][:association])
+    api_key     = params[:alyacom_api_key]      ? params[:alyacom_api_key]      : customer.devices[:alyacom][:api_key]
+    association = params[:alyacom_association]  ? params[:alyacom_association]  : customer.devices[:alyacom][:association]
 
     rest_client_get [api_url, association, 'users'].join('/'), { apiKey: api_key }
     rescue RestClient::Forbidden, RestClient::InternalServerError, RestClient::ResourceNotFound

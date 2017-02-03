@@ -19,8 +19,8 @@ class Trimble < DeviceBase
 
   def check_auth(params, customer)
 
-    user    = params[:trimble_username]  ? params[:trimble_username]  : customer.try(:devices[:trimble][:username])
-    passwd  = params[:trimble_password]  ? params[:trimble_password]  : customer.try(:devices[:trimble][:password])
+    user    = params[:trimble_username]  ? params[:trimble_username]  : customer.devices[:trimble][:username]
+    passwd  = params[:trimble_password]  ? params[:trimble_password]  : customer.devices[:trimble][:password]
 
     client ||= Savon.client(basic_auth: [user, passwd], wsdl: api_url + '/Customer?wsdl', soap_version: 1) do
       # log true

@@ -134,6 +134,7 @@ function devices_observe_vehicle(params) {
           data: data,
           theme: 'bootstrap',
           width: '100%',
+          placeholder: I18n.t('vehicle_usages.form.devices.placeholder'),
           minimumResultsForSearch: -1,
           templateResult: function(data_selection) {
             return data_selection.text;

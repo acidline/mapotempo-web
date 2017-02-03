@@ -86,15 +86,22 @@
         <% end %>
 
 
-        <%# if f.object.customer.teksat? %>
-          <%#= f.select :teksat_id, t('vehicles.form.teksat_id'), [] %>
-        <%# end %>
-        <%# if f.object.customer.orange? %>
-          <%#= f.select :orange_id, t('vehicles.form.orange_id'), [] %>
-        <%# end %>
-        <%# if @vehicle_usage.vehicle.customer.enable_masternaut && !@vehicle_usage.vehicle.customer.masternaut_user.blank? && !@vehicle_usage.vehicle.customer.masternaut_password.blank? %>
-          <%#= f.text_field :masternaut_ref %>
-        <%# end %>
+        <% if f.object.customer.teksat? %>
+          <%= f.select :teksat_id, t('vehicles.form.teksat_id'), [] %>
+        <% end %>
+
+        <% if f.object.customer.orange? %>
+          <%= f.select :orange_id, t('vehicles.form.orange_id'), [] %>
+        <% end %>
+
+        <% if f.object.customer.masternaut? %>
+          <%= f.text_field :masternaut_ref %>
+        <% end %>
+
+        <% if f.object.customer.trimble? %>
+          <%#= f.text_field :trimble_ref %>
+        <% end %>
+
         <div class="form-group">
           <label class="col-md-2 control-label" for="vehicle_usage_vehicle_color">
             <%= t("activerecord.attributes.vehicle.color") %>
