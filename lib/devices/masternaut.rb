@@ -27,12 +27,18 @@ class Masternaut < DeviceBase
       has_sync: false,
       translate: {
         enable: 'activerecord.attributes.customer.devices.masternaut.enable',
-        help: 'customers.form.devices.masternaut_help'
+        help: 'customers.form.devices.masternaut_help',
+        admin_vehicle_label: 'activerecord.attributes.vehicle.devices.masternaut.label',
       },
-      form: [
-        [:text, 'username'],
-        [:password, 'password']
-      ]
+      forms: {
+        admin_customer: [
+          [:text, 'username'],
+          [:password, 'password']
+        ],
+        admin_vehicle: [
+          [:text, 'masternaut_ref'],
+        ],
+      }
     }
   end
 

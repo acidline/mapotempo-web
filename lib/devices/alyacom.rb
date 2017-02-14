@@ -26,16 +26,19 @@ class Alyacom < DeviceBase
     {
       device: 'alyacom',
       label: 'Alyacom',
-      image_url: 'http://alyacom.fr/wp-content/uploads/2016/12/cropped-cropped-Logo-ALYACOM-FR.png',
+      image_url: 'http://yolo2016.trophee-roses-des-sables.org/files/2016/01/alyacom_big-1-293x300.png',
       has_sync: false,
       translate: {
         enable: 'activerecord.attributes.customer.devices.alyacom.enable',
-        help: 'customers.form.devices.alyacom_help'
+        help: 'customers.form.devices.alyacom_help',
+        admin_vehicle_label: 'activerecord.attributes.vehicle.devices.alyacom.label',
       },
-      form: [
-        [:text, 'association'],
-        [:text, 'api_key']
-      ]
+      forms: {
+        admin_customer: [
+          [:text, 'association'],
+          [:text, 'api_key']
+        ]
+      }
     }
   end
 

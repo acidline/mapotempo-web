@@ -372,6 +372,21 @@ en:
         ref: "Reference"
         contact_email: "E-Mail"
         capacities: "Capacities"
+        devices:
+          tomtom:
+            label: Tomtom device link
+          orange:
+            label: Orange device link
+          teksat:
+            label: Teksat device link
+          masternaut:
+            label: Masternaut reference link
+          trimble:
+            label: Trimble reference link
+          alyacom:
+            label: Alyacom device link
+          suiviDeFlotte:
+            label: SuiviDeFlotte device link
       vehicle_usage:
         vehicle_id: "Vehicle"
         open: "Open"
@@ -1536,6 +1551,9 @@ or copy/paste following url in your browser : %{l} </p>\n
       service_time_start_addon: "before"
       service_time_end_addon: "after"
       service_times_help: "Durations added before the first stop and after the last stop"
+      devices:
+        placeholder: "Choose a device"
+        fieldset : "GPS & Mobiles"
 
   vehicle_usage_sets:
     default:

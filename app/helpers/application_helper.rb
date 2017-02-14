@@ -16,6 +16,7 @@
 # <http://www.gnu.org/licenses/agpl.html>
 #
 require "awesome_print"
+require 'pp'
 require "value_to_boolean"
 
 module ApplicationHelper
@@ -77,7 +78,7 @@ def dump(object, label = nil)
       else
         puts debugdateTimeColored + " : \n"
       end
-      ap object
+      pp object
       puts "\n"
   end
 

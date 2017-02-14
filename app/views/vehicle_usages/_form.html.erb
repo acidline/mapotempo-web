@@ -81,26 +81,31 @@
           </div>
         </div>
 
-        <% if f.object.customer.tomtom? %>
-          <%= f.select :tomtom_id, t('vehicles.form.tomtom_id'), [] %>
-        <% end %>
-
-
-        <% if f.object.customer.teksat? %>
-          <%= f.select :teksat_id, t('vehicles.form.teksat_id'), [] %>
-        <% end %>
-
-        <% if f.object.customer.orange? %>
-          <%= f.select :orange_id, t('vehicles.form.orange_id'), [] %>
-        <% end %>
-
-        <% if f.object.customer.masternaut? %>
-          <%= f.text_field :masternaut_ref %>
-        <% end %>
-
-        <% if f.object.customer.trimble? %>
-          <%#= f.text_field :trimble_ref %>
-        <% end %>
+        <fieldset>
+          <legend class="scheduler-border"><% t("vehicle_usages.form.devices.fieldset") %></legend>
+          <% f.object.customer.get_devices_list.each do |device| %>
+            <% if to_bool(f.object.customer.device_json_value(device[:device], :enable)) %>
+              <% if device[:forms].key?(:admin_vehicle) %>
+                <% device[:forms][:admin_vehicle].each do |element| %>
+                  <% name = 'vehicle_usage[vehicle][devices_linking]['+ element[1] + ']' %>
+                  <div class="form-group">
+                    <%= label_tag name, t(device[:translate][:admin_vehicle_label], :default => element[1].capitalize), class: 'col-md-2 control-label' %>
+                    <div class="col-md-6 input-append">
+                      <% case element[0] %>
+                        <% when :text %>
+                          <%= f.text_field_tag name, nil, id: nil, style: "display:none;" %>
+                          <%= f.text_field_tag name, @vehicle_usage.vehicle.device_linking_json_value(element[1]), autocomplete: "off", class: "form-control" %>
+                        <% when :select %>
+                          <%= f.select_tag name, [], id: nil, style: "display:none;" %>
+                          <%= f.select_tag name, [] %>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </fieldset>
 
         <div class="form-group">
           <label class="col-md-2 control-label" for="vehicle_usage_vehicle_color">

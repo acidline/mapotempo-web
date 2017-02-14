@@ -17,6 +17,17 @@
 #
 require 'sanitize'
 
+class HashSerializer
+  def self.dump(hash)
+    hash.to_json
+  end
+
+  def self.load(hash)
+    (hash || {}).with_indifferent_access
+  end
+end
+
+
 class Customer < ActiveRecord::Base
   belongs_to :reseller
   belongs_to :profile
@@ -38,10 +49,10 @@ class Customer < ActiveRecord::Base
   has_many :deliverable_units, -> { order('id') }, inverse_of: :customer, autosave: true, dependent: :delete_all, after_add: :update_deliverable_units_track, after_remove: :update_deliverable_units_track
   enum router_dimension: Router::DIMENSION
 
-  attr_accessor :deliverable_units_updated, :devices
+  attr_accessor :deliverable_units_updated
 
   nilify_blanks
-  # auto_strip_attributes :name, :tomtom_account, :tomtom_user, :tomtom_password, :print_header, :masternaut_user, :masternaut_password, :alyacom_association, :default_country
+  # auto_strip_attributes :name, :default_country
   auto_strip_attributes :name, :print_header,  :default_country
   validates :ref, uniqueness: { scope: :reseller_id, case_sensitive: true }, allow_nil: true, allow_blank: true
   validates :profile, presence: true
@@ -67,15 +78,6 @@ class Customer < ActiveRecord::Base
   # ==> NICOLAS TEST before_save :devices_update_vehicles, prepend: true
 
   include RefSanitizer
-
-  # Alias / Shortcut to check_device
-  Mapotempo::Application.config.devices.to_h.each{ |device_name, device_object|
-    method_name = device_name.to_s + '?'
-    dump(method_name)
-    define_method(method_name) {
-      check_device(device_name)
-    }
-  }
 
   amoeba do
     nullify :job_destination_geocoding_id
@@ -229,7 +231,19 @@ class Customer < ActiveRecord::Base
     }
   end
 
-  def get_json_value(device, key)
+  # Alias / Shortcut to check_device
+  Mapotempo::Application.config.devices.to_h.each{ |device_name, device_object|
+    method_name = device_name.to_s + '?'
+    define_method(method_name) {
+      check_device(device_name)
+    }
+  }
+
+  def device_config(device)
+    devices[device.to_sym]
+  end
+
+  def device_json_value(device, key)
     devices[device.to_sym][key.to_sym]
   end
 

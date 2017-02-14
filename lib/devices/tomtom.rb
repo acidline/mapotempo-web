@@ -29,13 +29,19 @@ class Tomtom < DeviceBase
       translate: {
         enable: 'activerecord.attributes.customer.devices.tomtom.enable',
         help: 'customers.form.devices.tomtom_help',
-        sync: 'customers.form.devices.sync.tomtom.action'
+        sync: 'customers.form.devices.sync.tomtom.action',
+        admin_vehicle_label: 'activerecord.attributes.vehicle.devices.tomtom.label',
       },
-      form: [
-        [:text, 'account'],
-        [:text, 'username'],
-        [:password, 'password']
-      ]
+      forms: {
+        admin_customer: [
+          [:text, 'account'],
+          [:text, 'username'],
+          [:password, 'password']
+        ],
+        admin_vehicle: [
+          [:select, 'tomtom_id'],
+        ],
+      }
     }
   end
 

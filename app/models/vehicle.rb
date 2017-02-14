@@ -32,7 +32,9 @@ class Vehicle < ActiveRecord::Base
   serialize :capacities, DeliverableUnitQuantity
 
   nilify_blanks
-  auto_strip_attributes :name, :tomtom_id, :masternaut_ref
+  # auto_strip_attributes :name, :tomtom_id, :masternaut_ref
+  # TODO
+  auto_strip_attributes :name
   validates :customer, presence: true
   validates :name, presence: true
   validates :emission, numericality: {only_float: true}, allow_nil: true
@@ -78,6 +80,14 @@ class Vehicle < ActiveRecord::Base
 
       def copy.destroy_vehicle; end
     })
+  end
+
+  def devices_linking
+    self[:devices_linking].deep_symbolize_keys
+  end
+
+  def device_linking_json_value(key)
+    devices_linking[key.to_sym]
   end
 
   def default_router

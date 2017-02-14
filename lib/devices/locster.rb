@@ -8,7 +8,16 @@ class Locster < DeviceBase
 	    has_sync: false,
 	    translate: {
 	      enable: 'activerecord.attributes.customer.devices.locster.enable'
-	    }
+	    },
+		forms: {
+        	admin_customer: [
+	          [:text, 'username'],
+	          [:password, 'password']
+	        ],
+	        admin_vehicle: [
+	          [:text, 'locster_ref']
+	        ],
+      	}
 	  }
   end
   

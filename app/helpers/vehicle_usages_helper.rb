@@ -87,9 +87,9 @@ module VehicleUsagesHelper
 
   def vehicle_external_services(vehicle)
     services = []
-    services << 'TomTom' if !vehicle.tomtom_id.blank?
-    services << 'Teksat' if !vehicle.teksat_id.blank?
-    services << 'Orange' if !vehicle.orange_id.blank?
+    vehicle.devices_linking.each { |key, value|
+      services << key.to_s.split('_').first.capitalize if !value.nil?
+    }
     services.join(', ')
   end
 

@@ -8,7 +8,16 @@ class SuiviDeFlotte < DeviceBase
 	    has_sync: false,
 	    translate: {
 	      enable: 'activerecord.attributes.customer.devices.suiviDeFlotte.enable'
-	    }
+	    },
+		forms: {
+        	admin_customer: [
+	          [:text, 'username'],
+	          [:password, 'password']
+	        ],
+	        admin_vehicle: [
+	          [:text, 'suiviDeFlotte_ref']
+	        ],
+      	}
 	  }
   end
   

@@ -384,6 +384,21 @@ fr:
         ref: "Référence"
         contact_email: "Email"
         capacities: "Capacités"
+        devices:
+          tomtom:
+            label: Liaison appareil Tomtom
+          orange:
+            label: Liaison appareil Orange
+          teksat:
+            label: Liaison appareil Teksat
+          masternaut:
+            label: Référence appareil Masternaut
+          trimble:
+            label: Référence appareil Trimble
+          alyacom:
+            label: Liaison appareil Alyacom
+          suiviDeFlotte:
+            label: Liaison appareil SuiviDeFlotte
       vehicle_usage:
         vehicle_id: "Véhicule"
         open: "Horaire début"
@@ -1550,6 +1565,7 @@ ou en effectuant un copier/coller de l'URL suivante : %{l} </p>\n
       service_times_help: "Durées ajoutées avant le premier arrêt et après le dernier arrêt."
       devices:
         placeholder: "Sélectionner un appareil"
+        fieldset : "GPS & Mobiles"
 
   vehicle_usage_sets:
     default:

@@ -7,13 +7,19 @@ class Trimble < DeviceBase
 	    image_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/dd/Trimble_logo.svg/1280px-Trimble_logo.svg.png',
 	    has_sync: false,
 	    translate: {
-	      enable: 'activerecord.attributes.customer.devices.trimble.enable'
+	      enable: 'activerecord.attributes.customer.devices.trimble.enable',
+        admin_vehicle_label: 'activerecord.attributes.vehicle.devices.trimble.label',
 	    },
-	    form: [
-	    	[:text, 'customer'],
-	      [:text, 'username'],
-	      [:password, 'password']
-	    ]
+      forms: {
+        admin_customer: [
+          [:text, 'customer'],
+          [:text, 'username'],
+          [:password, 'password']
+        ],
+        admin_vehicle: [
+          [:text, 'trimble_ref']
+        ],
+      }
 	  }
   end
 

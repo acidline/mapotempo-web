@@ -77,7 +77,6 @@ CREATE TABLE customers (
     print_stop_time boolean DEFAULT true NOT NULL,
     ref character varying,
     enable_references boolean DEFAULT true,
-    teksat_url character varying,
     enable_multi_visits boolean DEFAULT false NOT NULL,
     router_dimension integer DEFAULT 0 NOT NULL,
     advanced_options text,
@@ -930,17 +929,14 @@ CREATE TABLE vehicles (
     customer_id integer NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    tomtom_id character varying(255),
     router_id integer,
-    masternaut_ref character varying(255),
     speed_multiplicator double precision,
     ref character varying,
     contact_email character varying,
-    teksat_id character varying,
-    orange_id character varying,
     fuel_type character varying,
     router_dimension integer,
-    capacities hstore
+    capacities hstore,
+    devices_linking jsonb
 );
 
 
@@ -2553,3 +2549,5 @@ INSERT INTO schema_migrations (version) VALUES ('20170215113103');
 INSERT INTO schema_migrations (version) VALUES ('20170220092059');
 
 INSERT INTO schema_migrations (version) VALUES ('20170124130011');
+
+INSERT INTO schema_migrations (version) VALUES ('20170203151857');

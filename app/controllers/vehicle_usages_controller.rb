@@ -52,10 +52,25 @@ class VehicleUsagesController < ApplicationController
     if params[:vehicle_usage][:vehicle][:router]
       params[:vehicle_usage][:vehicle][:router_id], params[:vehicle_usage][:vehicle][:router_dimension] = params[:vehicle_usage][:vehicle][:router].split('_')
     end
-    p = params.require(:vehicle_usage).permit(:open, :close, :store_start_id, :store_stop_id, :rest_start, :rest_stop, :rest_duration, :store_rest_id, :service_time_start, :service_time_end, vehicle: [:contact_email, :ref, :name, :emission, :consumption, :color, :tomtom_id, :teksat_id, :orange_id, :masternaut_ref, :router_id, :router_dimension, :speed_multiplicator, capacities: current_user.customer.deliverable_units.map{ |du| du.id.to_s }])
+
+    p = params.require(:vehicle_usage).permit(:open, :close, :store_start_id, :store_stop_id, :rest_start, :rest_stop, :rest_duration, :store_rest_id, :service_time_start, :service_time_end, vehicle: [:contact_email, :ref, :name, :emission, :consumption, :color, :router_id, :router_dimension, :speed_multiplicator, devices_linking: permit_device_links, capacities: current_user.customer.deliverable_units.map{ |du| du.id.to_s }])
     if p.key?(:vehicle)
       p[:vehicle_attributes] = p[:vehicle]
       p.except(:vehicle)
+      p.delete :vehicle
+      p
     end
   end
+
+  def permit_device_links
+    permit = []
+    Mapotempo::Application.config.devices.to_h.each{ |device_name, device_object|
+      device_definition = device_object.get_device_definition
+      if device_definition.key?(:forms) && device_definition[:forms].key?(:admin_vehicle)
+        permit << device_definition[:forms][:admin_vehicle].first.second
+      end
+    }
+    permit
+  end
+
 end

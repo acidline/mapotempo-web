@@ -47,7 +47,7 @@ class CustomersController < ApplicationController
 
   def update
     @customer.assign_attributes(customer_params)
-    @customer.devices = params[:customer][:devices]
+    @customer.update_columns(devices: customer_params[:devices])
     respond_to do |format|
       if @customer.save
         format.html { redirect_to edit_customer_path(@customer), notice: t('activerecord.successful.messages.updated', model: @customer.class.model_name.human) }
@@ -96,13 +96,28 @@ class CustomersController < ApplicationController
       params[:customer][:router_id], params[:customer][:router_dimension] = params[:customer][:router].split('_')
     end
     if current_user.admin?
-      p = params.require(:customer).permit(:devices, :ref, :name, :end_subscription, :max_vehicles, :take_over, :print_planning_annotating, :print_header, :router_id, :router_dimension, :speed_multiplicator, :enable_orders, :test, :optimization_cluster_size, :optimization_time, :optimization_stop_soft_upper_bound, :optimization_vehicle_soft_upper_bound, :profile_id, :default_country, :enable_multi_vehicle_usage_sets, :print_stop_time, :enable_references, :enable_multi_visits, :print_map, :enable_external_callback, :external_callback_url, :external_callback_name, :description, :enable_global_optimization, :enable_vehicle_position, :enable_stop_status)
+      p = params.require(:customer).permit(:ref, :name, :end_subscription, :max_vehicles, :take_over, :print_planning_annotating, :print_header, :router_id, :router_dimension, :speed_multiplicator, :enable_orders, :test, :optimization_cluster_size, :optimization_time, :optimization_stop_soft_upper_bound, :optimization_vehicle_soft_upper_bound, :profile_id, :default_country, :enable_multi_vehicle_usage_sets, :print_stop_time, :enable_references, :enable_multi_visits, :print_map, :enable_external_callback, :external_callback_url, :external_callback_name, :description, :enable_global_optimization, :enable_vehicle_position, :enable_stop_status, devices: permit_recursive_params(params[:customer][:devices]))
       p[:end_subscription] = Date.strptime(p[:end_subscription], I18n.t('time.formats.datepicker')).strftime(ACTIVE_RECORD_DATE_MASK) if !p[:end_subscription].blank?
       p
     else
-      allowed_params = [:devices, :take_over, :print_planning_annotating, :print_header, :router_id, :router_dimension, :speed_multiplicator, com_api_key, :default_country, :print_stop_time, :print_map, :external_callback_url, :external_callback_name]
+      allowed_params = [:take_over, :print_planning_annotating, :print_header, :router_id, :router_dimension, :speed_multiplicator, com_api_key, :default_country, :print_stop_time, :print_map, :external_callback_url, :external_callback_name, devices: permit_recursive_params(params[:customer][:devices])]
       allowed_params << :max_vehicles if !Mapotempo::Application.config.manage_vehicles_only_admin
       params.require(:customer).permit(*allowed_params)
     end
   end
+
+  def permit_recursive_params(params)
+    if !params.nil? 
+      params.map do |key, value|
+        if value.is_a?(Array)
+          { key => [ permit_recursive_params(value.first) ] }
+        elsif value.is_a?(Hash) || value.is_a?(ActionController::Parameters)
+          { key => permit_recursive_params(value) }
+        else
+          key
+        end
+      end
+    end
+  end
+
 end

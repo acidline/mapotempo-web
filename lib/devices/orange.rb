@@ -29,12 +29,18 @@ class Orange < DeviceBase
       translate: {
         enable: 'activerecord.attributes.customer.devices.orange.enable',
         help: 'customers.form.devices.orange_help',
-        sync: 'customers.form.devices.sync.orange.action'
+        sync: 'customers.form.devices.sync.orange.action',
+        admin_vehicle_label: 'activerecord.attributes.vehicle.devices.orange.label',
       },
-      form: [
-        [:text, 'username'],
-        [:password, 'password']
-      ]
+      forms: {
+        admin_customer: [
+          [:text, 'username'],
+          [:password, 'password']
+        ],
+        admin_vehicle: [
+          [:select, 'orange_id'],
+        ],
+      }
     }
   end
 

@@ -30,14 +30,20 @@ class Teksat < DeviceBase
       translate: {
         enable: 'activerecord.attributes.customer.devices.teksat.enable',
         help: 'customers.form.devices.teksat_help',
-        sync: 'customers.form.devices.sync.teksat.action'
+        sync: 'customers.form.devices.sync.teksat.action',
+        admin_vehicle_label: 'activerecord.attributes.vehicle.devices.teksat.label',
       },
-      form: [
-        [:text, 'customer_id'],
-        [:text, 'url'],
-        [:text, 'username'],
-        [:password, 'password']
-      ]
+      forms: {
+        admin_customer: [
+          [:text, 'customer_id'],
+          [:text, 'url'],
+          [:text, 'username'],
+          [:password, 'password']
+        ],
+        admin_vehicle: [
+          [:select, 'teksat_id'],
+        ],
+      }
     }
   end
 

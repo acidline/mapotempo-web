@@ -21,6 +21,7 @@ class AddJsonDevicesColumnAndRemoveOldColumnToCustomer < ActiveRecord::Migration
 				teksat: {
 					enable: customer.enable_teksat,
 					customer_id: customer.teksat_customer_id,
+					url: customer.teksat_url,
 					username: customer.teksat_username,
 					password: customer.teksat_password
 				},
@@ -65,6 +66,7 @@ class AddJsonDevicesColumnAndRemoveOldColumnToCustomer < ActiveRecord::Migration
 		remove_column :customers, :tomtom_password
 		remove_column :customers, :enable_teksat
 		remove_column :customers, :teksat_customer_id
+		remove_column :customers, :teksat_url
 		remove_column :customers, :teksat_username
 		remove_column :customers, :teksat_password
 		remove_column :customers, :enable_masternaut
@@ -86,6 +88,7 @@ class AddJsonDevicesColumnAndRemoveOldColumnToCustomer < ActiveRecord::Migration
 		add_column :customers, :tomtom_user, :string
 		add_column :customers, :tomtom_password, :string
 		add_column :customers, :enable_teksat, :boolean
+		add_column :customers, :teksat_url, :string
 		add_column :customers, :teksat_customer_id, :string
 		add_column :customers, :teksat_username, :string
 		add_column :customers, :teksat_password, :string
@@ -114,6 +117,7 @@ class AddJsonDevicesColumnAndRemoveOldColumnToCustomer < ActiveRecord::Migration
 			customer.teksat_customer_id = json['teksat']['customer_id']
 			customer.teksat_username = json['teksat']['username']
 			customer.teksat_password = json['teksat']['password']
+			customer.teksat_url = json['teksat']['url']
 
 			customer.enable_masternaut = json['masternaut']['enable']
 			customer.masternaut_user = json['masternaut']['username']

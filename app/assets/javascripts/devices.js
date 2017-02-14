@@ -134,7 +134,7 @@ function devices_observe_vehicle(params) {
           data: data,
           theme: 'bootstrap',
           width: '100%',
-          placeholder: I18n.t('vehicle_usages.form.devices.placeholder'),
+          // placeholder: I18n.t('vehicle_usages.form.devices.placeholder'),
           minimumResultsForSearch: -1,
           templateResult: function(data_selection) {
             return data_selection.text;
@@ -150,8 +150,9 @@ function devices_observe_vehicle(params) {
 
   /* API: Devices */
   $.each(['tomtom', 'teksat', 'orange'], function(i, name) {
-    if (params[name]) devices_init_vehicle('vehicle_usage_vehicle', name);
+    if (params[name]) devices_init_vehicle('vehicle_usage_vehicle_devices_linking', name);
   });
+  
 }
 
 function devices_observe_customer(params) {
