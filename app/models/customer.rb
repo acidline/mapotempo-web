@@ -17,17 +17,6 @@
 #
 require 'sanitize'
 
-class HashSerializer
-  def self.dump(hash)
-    hash.to_json
-  end
-
-  def self.load(hash)
-    (hash || {}).with_indifferent_access
-  end
-end
-
-
 class Customer < ActiveRecord::Base
   belongs_to :reseller
   belongs_to :profile
@@ -49,7 +38,7 @@ class Customer < ActiveRecord::Base
   has_many :deliverable_units, -> { order('id') }, inverse_of: :customer, autosave: true, dependent: :delete_all, after_add: :update_deliverable_units_track, after_remove: :update_deliverable_units_track
   enum router_dimension: Router::DIMENSION
 
-  attr_accessor :deliverable_units_updated
+  attr_accessor :deliverable_units_updated, :device
 
   nilify_blanks
   # auto_strip_attributes :name, :default_country
@@ -71,6 +60,7 @@ class Customer < ActiveRecord::Base
   validates :speed_multiplicator, numericality: { greater_than_or_equal_to: 0.5, less_than_or_equal_to: 1.5 }, if: :speed_multiplicator
 
   after_initialize :assign_defaults, :update_max_vehicles, if: 'new_record?'
+  after_initialize :assign_device
   after_create :create_default_store, :create_default_vehicle_usage_set, :create_default_deliverable_unit
   before_update :update_out_of_date, :update_max_vehicles, :update_enable_multi_visits
   before_save :sanitize_print_header
@@ -180,6 +170,10 @@ class Customer < ActiveRecord::Base
     })
   end
 
+  def assign_device
+    @device = Device.new(self)
+  end
+
   def devices
     self[:devices].deep_symbolize_keys
   end
@@ -235,7 +229,7 @@ class Customer < ActiveRecord::Base
   Mapotempo::Application.config.devices.to_h.each{ |device_name, device_object|
     method_name = device_name.to_s + '?'
     define_method(method_name) {
-      check_device(device_name)
+      @device.check_device(device_name)
     }
   }
 
@@ -246,29 +240,6 @@ class Customer < ActiveRecord::Base
   def device_json_value(device, key)
     devices[device.to_sym][key.to_sym]
   end
-
-  def enabled_devices_list
-    devices.select{ |device, conf| conf[:enable] == "true" }
-  end
-
-  def get_devices_list
-    devices = []
-    Mapotempo::Application.config.devices.to_h.each{ |device_name, device_object|
-      devices << device_object.get_device_definition
-    }
-    devices
-  end
-
-  def check_device(device_name)
-    active = false
-    if enabled_devices_list.key?(device_name)
-      enabled_devices_list[device_name].each{ |k, v| 
-        active = !v.blank? ? true : false;
-      }
-    end
-    active
-  end
-
 
   private
 

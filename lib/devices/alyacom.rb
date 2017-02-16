@@ -29,9 +29,13 @@ class Alyacom < DeviceBase
       image_url: 'http://yolo2016.trophee-roses-des-sables.org/files/2016/01/alyacom_big-1-293x300.png',
       has_sync: false,
       translate: {
-        enable: 'activerecord.attributes.customer.devices.alyacom.enable',
-        help: 'customers.form.devices.alyacom_help',
-        admin_vehicle_label: 'activerecord.attributes.vehicle.devices.alyacom.label',
+        admin_customer: {
+          :enable => 'activerecord.attributes.customer.devices.alyacom.enable',
+          :help => 'customers.form.devices.alyacom_help'
+        },
+        admin_vehicle: {
+          :label => 'activerecord.attributes.vehicle.devices.alyacom.label'
+        }
       },
       forms: {
         admin_customer: [

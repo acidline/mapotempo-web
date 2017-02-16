@@ -9,7 +9,7 @@ class V01::Devices::DevicesApi < Grape::API
       end
 
       def device_enabled?(device)
-        devices = @customer.enabled_devices_list
+        devices = @customer.device.enabled_devices_list
         devices.key?(device)
       end
 

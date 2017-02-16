@@ -28,10 +28,14 @@ class Teksat < DeviceBase
       image_url: 'https://www.teksat.fr/wp-content/uploads/2016/06/logo-teksat.png',
       has_sync: true,
       translate: {
-        enable: 'activerecord.attributes.customer.devices.teksat.enable',
-        help: 'customers.form.devices.teksat_help',
-        sync: 'customers.form.devices.sync.teksat.action',
-        admin_vehicle_label: 'activerecord.attributes.vehicle.devices.teksat.label',
+        admin_customer: {
+          :enable => 'activerecord.attributes.customer.devices.teksat.enable',
+          :help => 'customers.form.devices.teksat_help',
+          :sync => 'customers.form.devices.sync.teksat.action'
+        },
+        admin_vehicle: {
+            :label => 'activerecord.attributes.vehicle.devices.teksat.label'
+        }
       },
       forms: {
         admin_customer: [

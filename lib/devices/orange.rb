@@ -27,10 +27,14 @@ class Orange < DeviceBase
       image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/350px-Orange_logo.svg.png',
       has_sync: true,
       translate: {
-        enable: 'activerecord.attributes.customer.devices.orange.enable',
-        help: 'customers.form.devices.orange_help',
-        sync: 'customers.form.devices.sync.orange.action',
-        admin_vehicle_label: 'activerecord.attributes.vehicle.devices.orange.label',
+        admin_customer: {
+          :enable => 'activerecord.attributes.customer.devices.orange.enable',
+          :help => 'customers.form.devices.orange_help',
+          :sync => 'customers.form.devices.sync.orange.action'
+        },
+        admin_vehicle: {
+          :label => 'activerecord.attributes.vehicle.devices.orange.label'
+        }
       },
       forms: {
         admin_customer: [

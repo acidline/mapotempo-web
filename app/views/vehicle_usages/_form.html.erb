@@ -83,26 +83,9 @@
 
         <fieldset>
           <legend class="scheduler-border"><% t("vehicle_usages.form.devices.fieldset") %></legend>
-          <% f.object.customer.get_devices_list.each do |device| %>
-            <% if to_bool(f.object.customer.device_json_value(device[:device], :enable)) %>
-              <% if device[:forms].key?(:admin_vehicle) %>
-                <% device[:forms][:admin_vehicle].each do |element| %>
-                  <% name = 'vehicle_usage[vehicle][devices_linking]['+ element[1] + ']' %>
-                  <div class="form-group">
-                    <%= label_tag name, t(device[:translate][:admin_vehicle_label], :default => element[1].capitalize), class: 'col-md-2 control-label' %>
-                    <div class="col-md-6 input-append">
-                      <% case element[0] %>
-                        <% when :text %>
-                          <%= f.text_field_tag name, nil, id: nil, style: "display:none;" %>
-                          <%= f.text_field_tag name, @vehicle_usage.vehicle.device_linking_json_value(element[1]), autocomplete: "off", class: "form-control" %>
-                        <% when :select %>
-                          <%= f.select_tag name, [], id: nil, style: "display:none;" %>
-                          <%= f.select_tag name, [] %>
-                      <% end %>
-                    </div>
-                  </div>
-                <% end %>
-              <% end %>
+          <% f.object.customer.device.devices_list.each do |device| %>
+            <% if ValueToBoolean.value_to_boolean(f.object.customer.device_json_value(device[:device], :enable)) %>
+              <%= f.object.customer.device.render_form(device, :admin_vehicle, 'vehicle_usage[vehicle][devices_linking]', f, @vehicle_usage.vehicle) %>
             <% end %>
           <% end %>
         </fieldset>

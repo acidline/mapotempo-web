@@ -27,10 +27,14 @@ class Tomtom < DeviceBase
       image_url: 'https://www.macupdate.com/images/icons256/21813.png',
       has_sync: true,
       translate: {
-        enable: 'activerecord.attributes.customer.devices.tomtom.enable',
-        help: 'customers.form.devices.tomtom_help',
-        sync: 'customers.form.devices.sync.tomtom.action',
-        admin_vehicle_label: 'activerecord.attributes.vehicle.devices.tomtom.label',
+        admin_customer: {
+          :enable => 'activerecord.attributes.customer.devices.tomtom.enable',
+          :help =>'customers.form.devices.tomtom_help',
+          :sync =>'customers.form.devices.sync.tomtom.action'
+        },
+        admin_vehicle: {
+          :label => 'activerecord.attributes.vehicle.devices.tomtom.label'
+        }
       },
       forms: {
         admin_customer: [

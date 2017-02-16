@@ -26,9 +26,13 @@ class Masternaut < DeviceBase
       image_url: 'http://www.cogemathieu.fr/wp-content/uploads/2016/02/masternaut.png',
       has_sync: false,
       translate: {
-        enable: 'activerecord.attributes.customer.devices.masternaut.enable',
-        help: 'customers.form.devices.masternaut_help',
-        admin_vehicle_label: 'activerecord.attributes.vehicle.devices.masternaut.label',
+        admin_customer: {
+          :enable => 'activerecord.attributes.customer.devices.masternaut.enable',
+          :help => 'customers.form.devices.masternaut_help'
+        },
+        admin_vehicle: {
+          :label => 'activerecord.attributes.vehicle.devices.masternaut.label'
+        }
       },
       forms: {
         admin_customer: [

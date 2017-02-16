@@ -99,7 +99,11 @@
               </li>
               <li role="separator" class="divider"></li>
             <% end %>
-            <% if @planning.customer.tomtom? && @planning.routes.any?{|route| route.vehicle_usage && !route.vehicle_usage.vehicle.tomtom_id.blank? } %>
+
+
+            <%# TODO %>
+            
+            <% if @planning.customer.tomtom? && @planning.routes.any?{|route| route.vehicle_usage && !route.vehicle_usage.vehicle[:devices_linking][:tomtom_id].nil? } %>
               <li class="link device-operation" data-service="tomtom" data-operation="send" data-type="waypoints" data-planning-id="<%= @planning.id %>">
                 <i class="fa fa-mobile fa-rotate-90 fa-fw"></i>
                 <%= t 'plannings.edit.tomtom_send_waypoints.action' %>
@@ -114,7 +118,9 @@
               </li>
               <li role="separator" class="divider"></li>
             <% end %>
-            <% if @planning.customer.teksat? && @planning.routes.any?{|route| route.vehicle_usage && !route.vehicle_usage.vehicle.teksat_id.blank? } %>
+
+
+            <% if @planning.customer.teksat? && @planning.routes.any?{|route| route.vehicle_usage && !route.vehicle_usage.vehicle[:devices_linking][:teksat_id].nil? } %>
               <li class="link device-operation" data-service="teksat" data-operation="send" data-planning-id="<%= @planning.id %>">
                 <i class="fa fa-mobile fa-rotate-90 fa-fw"></i>
                 <%= t 'plannings.edit.teksat_send.action' %>
@@ -125,7 +131,9 @@
               </li>
               <li role="separator" class="divider"></li>
             <% end %>
-            <% if @planning.customer.orange? && @planning.routes.any?{|route| route.vehicle_usage && !route.vehicle_usage.vehicle.orange_id.blank? } %>
+
+
+            <% if @planning.customer.orange? && @planning.routes.any?{|route| route.vehicle_usage && !route.vehicle_usage.vehicle[:devices_linking][:orange_id].nil? } %>
               <li class="link device-operation" data-service="orange" data-operation="send" data-planning-id="<%= @planning.id %>">
                 <i class="fa fa-mobile fa-rotate-90 fa-fw"></i>
                 <%= t 'plannings.edit.orange_send.action' %>
@@ -136,6 +144,9 @@
               </li>
               <li role="separator" class="divider"></li>
             <% end %>
+
+
+
             <% if @planning.customer.masternaut? %>
               <li class="link device-operation" data-service="masternaut" data-operation="send" data-planning-id="<%= @planning.id %>">
                 <i class="fa fa-mobile fa-rotate-90 fa-fw"></i>

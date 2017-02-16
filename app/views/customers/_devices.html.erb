@@ -13,7 +13,7 @@
       <div id="devicesListing" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingDevices">
         <div class="panel-body">
           <div class="row">
-              <% @customer.get_devices_list.each do |device| %>
+              <% @customer.device.devices_list.each do |device| %>
                 <% name = 'customer[devices]['+ device[:device] +'][enable]' %>
                 <% label_name = t(device[:translate][:enable]) %>
                 <div class="col-md-2">
@@ -46,7 +46,7 @@
       <div class="col-xs-3">
         <ul class="nav nav-tabs tabs-left">
         <% setActive = true  %>
-        <% @customer.get_devices_list.each do |device| %>
+        <% @customer.device.devices_list.each do |device| %>
           <% if to_bool(@customer.device_json_value(device[:device], :enable)) %>
             <li class="<%= setActive == true ? 'active' : '' %>">
               <a href="#<%= device[:device] %>" data-toggle="tab" id="nav-tabs-device-<%= device[:device] %>" class="nav-tabs-device">
@@ -63,7 +63,7 @@
 
         <div class="tab-content">
         <% setActive = true  %>
-        <% @customer.get_devices_list.each do |device| %>
+        <% @customer.device.devices_list.each do |device| %>
         
           <% if to_bool(@customer.device_json_value(device[:device], :enable)) %>
           <div class="tab-pane <%= setActive == true ? 'active' : '' %>" id="<%= device[:device] %>">
@@ -74,34 +74,17 @@
 
               <div class="panel-body">
 
-                <% if device[:translate].key?(:help) %>
-                <p class="help-block"><%= t device[:translate][:help] %></p>
+                <% if device[:translate][:admin_customer].key?(:help) %>
+                <p class="help-block"><%= t device[:translate][:admin_customer][:help] %></p>
                 <% end %>
 
                 <div class="col-md-12">
-                  <% if device[:forms].key?(:admin_customer) %>
-                    <% device[:forms][:admin_customer].each do |element| %>
-                      <% name = 'customer[devices]['+ device[:device] +']['+ element[1] + ']' %>
-                      <div class="form-group" id="customer_ref_input">
-                        <%= label_tag name, t('activerecord.attributes.customer.devices.' + device[:device] + '.' + element[1], :default => element[1].capitalize), class: 'col-md-3 control-label' %>
-                        <div class="col-md-6 input-append">
-                          <% case element[0] %>
-                            <% when :text %>
-                              <%= f.text_field_tag name, nil, id: nil, style: "display:none;" %>
-                              <%= f.text_field_tag name, @customer.device_json_value(device[:device], element[1]), autocomplete: "off", class: "form-control" %>
-                            <% when :password %>
-                              <%= f.password_field_tag name, nil, id: nil, style: "display:none;" %>
-                              <%= f.password_field_tag name, @customer.device_json_value(device[:device], element[1]), autocomplete: "off", class: "form-control" %>
-                          <% end %>
-                        </div>
-                      </div>
-                    <% end %>
-                  <% end %>
-                  
+                  <%= @customer.device.render_form(device, :admin_customer, 'customer[devices]['+ device[:device] +']', f, @customer) %>
+
                   <% if device[:has_sync] %>
                   <div class="btn btn-default btn-sm <%= device[:device] %>-api-sync" disabled="disabled">
                     <i class="fa fa-bolt fa-fw"></i>
-                    <%= t device[:translate][:sync] %>
+                    <%= t device[:translate][:admin_customer][:sync] %>
                   </div>
                   <% end %>
                 </div>
