@@ -83,7 +83,11 @@ class Vehicle < ActiveRecord::Base
   end
 
   def devices_linking
-    self[:devices_linking].deep_symbolize_keys
+    if self[:devices_linking] && self[:devices_linking].respond_to?('deep_symbolize_keys!')
+      return self[:devices_linking].deep_symbolize_keys!
+    end
+    
+    self[:devices_linking]
   end
 
   def device_json_value(device, key)
@@ -101,16 +105,6 @@ class Vehicle < ActiveRecord::Base
   def default_speed_multiplicator
     customer.speed_multiplicator * (speed_multiplicator || 1)
   end
-
-  # def available_position?
-  #   customer.enable_vehicle_position? &&
-  #     (
-  #       (!tomtom_id.blank? && customer.tomtom?) ||
-  #       (!teksat_id.blank? && customer.teksat?) ||
-  #       (!orange_id.blank? && customer.orange?) ||
-  #       (!masternaut_ref.blank? && customer.masternaut?)
-  #     )
-  # end
 
   def default_capacities
     @default_capacities ||= Hash[customer.deliverable_units.collect{ |du|

@@ -24,14 +24,30 @@ class V01::Customers < Grape::API
       p = ActionController::Parameters.new(params)
       p = p[:customer] if p.key?(:customer)
       if @current_user.admin?
-        p.permit(:ref, :name, :end_subscription, :max_vehicles, :take_over, :print_planning_annotating, :print_header, :enable_tomtom, :enable_masternaut, :enable_alyacom, :tomtom_account, :tomtom_user, :tomtom_password, :masternaut_user, :masternaut_password, :router_id, :router_dimension, :test, :alyacom_association, :optimization_cluster_size, :optimization_time, :optimization_stop_soft_upper_bound, :optimization_vehicle_soft_upper_bound, :profile_id, :default_country, :reseller_id, :print_stop_time, :speed_multiplicator, :enable_references, :enable_multi_vehicle_usage_sets, :enable_multi_visits, :advanced_options, :enable_external_callback, :external_callback_url, :external_callback_name, :description, :enable_global_optimization, :enable_vehicle_position, :enable_stop_status)
+        p.permit(:ref, :name, :end_subscription, :max_vehicles, :take_over, :print_planning_annotating, :print_header, :router_id, :router_dimension, :test, :optimization_cluster_size, :optimization_time, :optimization_stop_soft_upper_bound, :optimization_vehicle_soft_upper_bound, :profile_id, :default_country, :reseller_id, :print_stop_time, :speed_multiplicator, :enable_references, :enable_multi_vehicle_usage_sets, :enable_multi_visits, :advanced_options, :enable_external_callback, :external_callback_url, :external_callback_name, :description, :enable_global_optimization, :enable_vehicle_position, :enable_stop_status, devices_linking: permit_device_links)
       else
         p.permit(:take_over, :print_planning_annotating, :print_header, :tomtom_account, :tomtom_user, :tomtom_password, :masternaut_user, :masternaut_password, :router_id, :alyacom_association, :default_country, :print_stop_time, :speed_multiplicator, :advanced_options, :enable_external_callback, :external_callback_url, :external_callback_name)
       end
     end
 
     ID_DESC = 'Id or the ref field value, then use "ref:[value]".'.freeze
+
+
+    def permit_device_links
+      permit = []
+      Mapotempo::Application.config.devices.to_h.each{ |device_name, device_object|
+        if device.respond_to?('definition')
+          device_definition = device_object.definition
+          if device_definition.key?(:forms) && device_definition[:forms].key?(:admin_vehicle)
+            permit << device_definition[:forms][:admin_vehicle].first.second
+          end
+        end
+      }
+      permit
+    end
+
   end
+
 
   resource :customers do
     desc 'Fetch customers.',

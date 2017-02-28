@@ -19,7 +19,7 @@ class Masternaut < DeviceBase
   
   attr_reader :client_poi, :client_job, :client_geoloc
 
-  def get_device_definition
+  def definition
     {
       device: 'masternaut',
       label: 'Masternaut',
@@ -62,7 +62,7 @@ class Masternaut < DeviceBase
   end
 
   def savon_client_poi(customer)
-    @client_poi ||= Savon.client(basic_auth: [customer.masternaut_user, customer.masternaut_password], wsdl: api_url + '/POI?wsdl', soap_version: 1) do
+    @client_poi ||= Savon.client(basic_auth: [customer.devices[:masternaut][:username], customer.devices[:masternaut][:password]], wsdl: api_url + '/POI?wsdl', soap_version: 1) do
       #log true
       #pretty_print_xml true
       convert_request_keys_to :none
@@ -70,7 +70,7 @@ class Masternaut < DeviceBase
   end
 
   def savon_client_job(customer)
-    @client_job ||= Savon.client(basic_auth: [customer.masternaut_user, customer.masternaut_password], wsdl: api_url + '/Job?wsdl', multipart: true, soap_version: 1) do
+    @client_job ||= Savon.client(basic_auth: [customer.devices[:masternaut][:username], customer.devices[:masternaut][:password]], wsdl: api_url + '/Job?wsdl', multipart: true, soap_version: 1) do
       #log true
       #pretty_print_xml true
       convert_request_keys_to :none
@@ -78,7 +78,7 @@ class Masternaut < DeviceBase
   end
 
   def savon_client_geoloc(customer)
-    @client_geoloc ||= Savon.client(basic_auth: [customer.masternaut_user, customer.masternaut_password], wsdl: api_url + '/Geoloc?wsdl', soap_version: 1) do
+    @client_geoloc ||= Savon.client(basic_auth: [customer.devices[:masternaut][:username], customer.devices[:masternaut][:password]], wsdl: api_url + '/Geoloc?wsdl', soap_version: 1) do
       #log true
       #pretty_print_xml true
       convert_request_keys_to :none
@@ -175,7 +175,7 @@ class Masternaut < DeviceBase
       }
     }.compact
     if !position.nil? && !position.lat.nil? && !position.lng.nil?
-      createJobRoute customer, route.vehicle_usage.vehicle.masternaut_ref, order_id_base, route.ref || route.vehicle_usage.vehicle.name, route.planning.date || Time.zone.today, route.start, route.end, waypoints
+      createJobRoute customer, route.vehicle_usage.vehicle.devices_linking[:masternaut_ref], order_id_base, route.ref || route.vehicle_usage.vehicle.name, route.planning.date || Time.zone.today, route.start, route.end, waypoints
     end
   end
 

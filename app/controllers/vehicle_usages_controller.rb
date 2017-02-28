@@ -65,9 +65,11 @@ class VehicleUsagesController < ApplicationController
   def permit_device_links
     permit = []
     Mapotempo::Application.config.devices.to_h.each{ |device_name, device_object|
-      device_definition = device_object.get_device_definition
-      if device_definition.key?(:forms) && device_definition[:forms].key?(:admin_vehicle)
-        permit << device_definition[:forms][:admin_vehicle].first.second
+      if device_object.respond_to?('definition')
+        device_definition = device_object.definition
+        if device_definition.key?(:forms) && device_definition[:forms].key?(:admin_vehicle)
+          permit << device_definition[:forms][:admin_vehicle].first.second
+        end
       end
     }
     permit

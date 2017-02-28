@@ -16,6 +16,7 @@
 # <http://www.gnu.org/licenses/agpl.html>
 #
 require 'sanitize'
+require 'json'
 
 class Customer < ActiveRecord::Base
   belongs_to :reseller
@@ -65,7 +66,7 @@ class Customer < ActiveRecord::Base
   before_update :update_out_of_date, :update_max_vehicles, :update_enable_multi_visits
   before_save :sanitize_print_header
   
-  # ==> NICOLAS TEST before_save :devices_update_vehicles, prepend: true
+  before_save :devices_update_vehicles, prepend: true
 
   include RefSanitizer
 
@@ -175,7 +176,11 @@ class Customer < ActiveRecord::Base
   end
 
   def devices
-    self[:devices].deep_symbolize_keys
+    if self[:devices] && self[:devices].respond_to?('deep_symbolize_keys!')
+      return self[:devices].deep_symbolize_keys!
+    end
+    
+    self[:devices]
   end
 
   def duplicate
@@ -227,27 +232,67 @@ class Customer < ActiveRecord::Base
 
   # Alias / Shortcut to check_device
   Mapotempo::Application.config.devices.to_h.each{ |device_name, device_object|
-    method_name = device_name.to_s + '?'
-    define_method(method_name) {
+    define_method(device_name.to_s + '?') {
       @device.check_device(device_name)
     }
   }
 
   def device_config(device)
-    devices[device.to_sym]
+    devices[device.to_sym] if !devices.nil?
   end
 
   def device_json_value(device, key)
-    devices[device.to_sym][key.to_sym]
+    devices[device.to_sym][key.to_sym] if !devices.nil? && !devices[device.to_sym].nil?
   end
 
   private
 
   def devices_update_vehicles
     # Remove device association on vehicles
-    self.vehicles.select(&:tomtom_id).each{ |vehicle| vehicle.tomtom_id = nil } if !self.enable_tomtom || (self.tomtom_account_changed? && !self.tomtom_account_was.nil?) || (self.tomtom_user_changed? && !self.tomtom_user_was.nil?)
-    self.vehicles.select(&:teksat_id).each{ |vehicle| vehicle.teksat_id = nil } if !self.enable_teksat || (self.teksat_customer_id_changed? && !self.teksat_customer_id_was.nil?) || (self.teksat_username_changed? && !self.teksat_username_was.nil?)
-    self.vehicles.select(&:orange_id).each{ |vehicle| vehicle.orange_id = nil } if !self.enable_orange || (self.orange_user_changed? && !self.orange_user_was.nil?)
+    self.vehicles.select(&:devices_linking).each{ |vehicle| vehicle.devices_linking[:tomtom_id] = nil } if check_tomtom_changes
+    self.vehicles.select(&:devices_linking).each{ |vehicle| vehicle.devices_linking[:teksat_id] = nil } if check_teksat_changes
+    self.vehicles.select(&:devices_linking).each{ |vehicle| vehicle.devices_linking[:orange_id] = nil } if check_orange_changes
+  end
+
+  # TODO : refactor
+  def check_tomtom_changes
+    before = self.changed.include?('devices') ? self.changes[:devices].first : nil
+    after = self.changed.include?('devices') ? self.changes[:devices].second : nil
+
+    if self.changed.include?('devices') && !before.nil? && !after.nil?
+      if after.include?(:tomtom) && before.include?(:tomtom)
+        return !after[:tomtom][:enable] || ((after[:tomtom][:account] != before[:tomtom][:account])  && !after[:tomtom][:account].nil?) || ((after[:tomtom][:username] != before[:tomtom][:username])  && !after[:tomtom][:username].nil?)
+      end
+    end
+
+    false
+  end
+
+  def check_teksat_changes
+    before = self.changed.include?('devices') ? self.changes[:devices].first : nil
+    after = self.changed.include?('devices') ? self.changes[:devices].second : nil
+
+    if self.changed.include?('devices') && !before.nil? && !after.nil?
+      if after.include?(:teksat) && before.include?(:teksat)
+        return !after[:teksat][:enable] || ((after[:teksat][:customer_id] != before[:teksat][:customer_id])  && !after[:teksat][:customer_id].nil?) || ((after[:teksat][:username] != before[:teksat][:username])  && !after[:teksat][:username].nil?)
+      end
+    end
+
+    false
+
+  end
+
+  def check_orange_changes
+    before = self.changed.include?('devices') ? self.changes[:devices].first : nil
+    after = self.changed.include?('devices') ? self.changes[:devices].second : nil
+
+    if self.changed.include?('devices') && !before.nil? && !after.nil?
+      if after.include?(:orange) && before.include?(:orange)
+        return !after[:orange][:enable] || ((after[:orange][:username] != before[:orange][:username])  && !after[:orange][:username].nil?)
+      end
+    end
+
+    false
   end
 
   def assign_defaults

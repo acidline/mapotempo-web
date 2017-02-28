@@ -107,8 +107,7 @@ Rails.application.configure do
   config.devices.tomtom.api_url = 'https://soap.business.tomtom.com/v1.30'
   config.devices.tomtom.api_key = '23ca1c50-2458-46f7-829f-27d476c30686'
   config.devices.trimble.api_url = 'https://soap.box.trimbletl.com/jboss-net/services'
-
-  # config.devices.cache_object = cache_factory('devices', 30)
+  config.devices.cache_object = cache_factory('devices', 30)
 
   config.delayed_job_use = false
 

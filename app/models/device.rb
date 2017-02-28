@@ -26,14 +26,16 @@ class Device
   def devices_list
     devices = []
     Mapotempo::Application.config.devices.to_h.each{ |device_name, device_object|
-      devices << device_object.get_device_definition
+      if(device_object.respond_to?('definition'))
+        devices << device_object.definition
+      end
     }
     devices
   end
 
   def check_device(device_name)
     active = false
-    if enabled_devices_list.key?(device_name)
+    if !enabled_devices_list.nil? && enabled_devices_list.key?(device_name)
       enabled_devices_list[device_name].each{ |k, v| 
         active = !v.blank? ? true : false;
       }
@@ -42,7 +44,6 @@ class Device
   end
 
   def available_position?
-
     ready_position = false
     devices_list.each{ |d|
       if check_device(d[:device])
@@ -50,13 +51,15 @@ class Device
         break
       end
     }
-
     @customer.enable_vehicle_position? && ready_position
+  end
 
+  def available_stop_status?
+    @customer.enable_stop_status?
   end
 
   def enabled_devices_list
-    @customer.devices.select{ |device, conf| conf[:enable] == "true" }
+    @customer.devices.select{ |device, conf| conf[:enable] == "true" } if !@customer.devices.nil?
   end
 
   def render_form(device, form_name, key, form, model)

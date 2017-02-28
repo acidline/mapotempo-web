@@ -484,9 +484,6 @@ class Route < ActiveRecord::Base
   end
 
   def update_vehicle_usage
-
-    #dump("Je suis dans ROUTE::update_vehicle_usage")
-
     if vehicle_usage_id_changed?
       if vehicle_usage.default_rest_duration.nil?
         stops.select{ |stop| stop.is_a?(StopRest) }.each{ |stop|

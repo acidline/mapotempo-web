@@ -1,6 +1,6 @@
 class SuiviDeFlotte < DeviceBase
 
-  def get_device_definition
+  def definition
 	  {
 	    device: 'suiviDeFlotte',
 	    label: 'SuiviDeFlotte',

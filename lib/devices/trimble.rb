@@ -1,6 +1,6 @@
 class Trimble < DeviceBase
 
-  def get_device_definition
+  def definition
 	  {
 	    device: 'trimble',
 	    label: 'Trimble',

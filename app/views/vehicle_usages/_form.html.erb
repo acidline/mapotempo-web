@@ -81,14 +81,11 @@
           </div>
         </div>
 
-        <fieldset>
-          <legend class="scheduler-border"><% t("vehicle_usages.form.devices.fieldset") %></legend>
-          <% f.object.customer.device.devices_list.each do |device| %>
-            <% if ValueToBoolean.value_to_boolean(f.object.customer.device_json_value(device[:device], :enable)) %>
-              <%= f.object.customer.device.render_form(device, :admin_vehicle, 'vehicle_usage[vehicle][devices_linking]', f, @vehicle_usage.vehicle) %>
-            <% end %>
+        <% f.object.customer.device.devices_list.each do |device| %>
+          <% if ValueToBoolean.value_to_boolean(f.object.customer.device_json_value(device[:device], :enable)) %>
+            <%= f.object.customer.device.render_form(device, :admin_vehicle, 'vehicle_usage[vehicle][devices_linking]', f, @vehicle_usage.vehicle) %>
           <% end %>
-        </fieldset>
+        <% end %>
 
         <div class="form-group">
           <label class="col-md-2 control-label" for="vehicle_usage_vehicle_color">

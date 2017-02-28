@@ -1,208 +1,180 @@
 <%= twitter_bootstrap_form_for @customer, layout: :horizontal, html: { class: 'clear-passwords number-to-percentage form-horizontal'} do |f| %>
   <%= render 'shared/error_messages', model: @customer %>
   
-<div class="col-xs-3">
-  <ul class="nav nav-tabs tabs-left">
-    <li class="active"><a href="#general-home" data-toggle="tab">Géneral</a></li>
-    <li><a href="#default-values" data-toggle="tab"><%= t '.default_value' %></a></li>
-    <% if current_user.admin? %>
-    <li><a href="#options" data-toggle="tab"><%= t '.options' %></a></li>
-    <li><a href="#optmisation" data-toggle="tab"><%= t '.optimization_parameters' %></a></li>
+
+  <% if current_user.admin? %>
+    <%= f.text_field :ref do %>
+      <p class="help-block"><%= t('activerecord.attributes.customer.ref_help') %></p>
     <% end %>
-    <li><a href="#diffusion" data-toggle="tab"><%= t '.outputs' %></a></li>
-  </ul>
-</div>
+    <%= f.text_area :description, { size:"100%", class:"form-control" } do %>
+      <p class="help-block"><%= t('activerecord.attributes.customer.description_help') %></p>
+    <% end %>
+  <% end %>
+  <%= f.text_field :name, t('.name'), required: true, disabled: !current_user.admin? %>
+  <%= f.text_field :end_subscription, {value: @customer.end_subscription ? l(@customer.end_subscription.to_time, format: :datepicker) : nil, disabled:!current_user.admin?, input_group: content_tag('i', '', {class: 'fa fa-calendar fa-fw'})} %>
+  <%= f.number_field :max_vehicles, min:1, disabled: (Mapotempo::Application.config.manage_vehicles_only_admin && !current_user.admin?), input_group: content_tag('i', '', class: 'fa fa-truck fa-fw') %>
+  <% if current_user.admin? %>
+    <%= f.toggles t 'activerecord.attributes.customer.test' do %>
+      <%= f.check_box :test %>
+    <% end %>
+  <% end %>
 
-<div class="col-xs-9">
-
-    <div class="tab-content">
-
-      <div class="tab-pane active" id="general-home">
-        <% if current_user.admin? %>
-          <%= f.text_field :ref do %>
-            <p class="help-block"><%= t('activerecord.attributes.customer.ref_help') %></p>
-          <% end %>
-          <%= f.text_area :description, { size:"100%", class:"form-control" } do %>
-            <p class="help-block"><%= t('activerecord.attributes.customer.description_help') %></p>
-          <% end %>
-        <% end %>
-        <%= f.text_field :name, t('.name'), required: true, disabled: !current_user.admin? %>
-        <%= f.text_field :end_subscription, {value: @customer.end_subscription ? l(@customer.end_subscription.to_time, format: :datepicker) : nil, disabled:!current_user.admin?, input_group: content_tag('i', '', {class: 'fa fa-calendar fa-fw'})} %>
-        <%= f.number_field :max_vehicles, min:1, disabled: (Mapotempo::Application.config.manage_vehicles_only_admin && !current_user.admin?), input_group: content_tag('i', '', class: 'fa fa-truck fa-fw') %>
-        <% if current_user.admin? %>
-          <%= f.toggles t 'activerecord.attributes.customer.test' do %>
-            <%= f.check_box :test %>
-          <% end %>
-        <% end %>
+  <fieldset>
+    <legend class="scheduler-border">
+      <%= t '.default_value' %>
+    </legend>
+    <% if current_user.admin? %>
+      <%= f.collection_select :profile_id, [], Profile.all, :id, :name, {}, {required: true, input_group: content_tag('i', '', class: 'fa fa-gear fa-fw')} %>
+    <% end %>
+    <div id="customer_router_input" class="form-group">
+      <label class="col-md-2 control-label" for="customer_router"><%= t 'activerecord.attributes.customer.router' %></label>
+      <div class="col-md-6">
+        <div class="input-group">
+          <% routers = @customer.id ? @customer.profile.routers : Router.all %>
+          <%= select_tag 'customer[router]', grouped_options_for_select([[t('activerecord.attributes.router.router_dimensions.time'), routers.select(&:time?).collect{ |router|
+              [router.name + ' - ' + t('activerecord.attributes.router.router_dimensions.time'), router.id.to_s + '_time']
+              }]] + [[t('activerecord.attributes.router.router_dimensions.distance'), routers.select(&:distance?).collect{ |router|
+              [router.name + ' - ' + t('activerecord.attributes.router.router_dimensions.distance'), router.id.to_s + '_distance']
+              }]],
+            @customer.router_id.to_s + '_' + @customer.router_dimension), class: 'form-control', required: true %>
+          <span class="input-group-addon"><i class="fa fa-gear fa-fw"></i></span>
+        </div>
+        <p class="help-block"><%= t '.router_help' %></p>
       </div>
+    </div>
 
-      <div class="tab-pane" id="default-values">
-        <fieldset>
-          <legend class="scheduler-border">
-            <%= t '.default_value' %>
-          </legend>
-          <% if current_user.admin? %>
-            <%= f.collection_select :profile_id, [], Profile.all, :id, :name, {}, {required: true, input_group: content_tag('i', '', class: 'fa fa-gear fa-fw')} %>
-          <% end %>
-          <div id="customer_router_input" class="form-group">
-            <label class="col-md-2 control-label" for="customer_router"><%= t 'activerecord.attributes.customer.router' %></label>
-            <div class="col-md-6">
-              <div class="input-group">
-                <% routers = @customer.id ? @customer.profile.routers : Router.all %>
-                <%= select_tag 'customer[router]', grouped_options_for_select([[t('activerecord.attributes.router.router_dimensions.time'), routers.select(&:time?).collect{ |router|
-                    [router.name + ' - ' + t('activerecord.attributes.router.router_dimensions.time'), router.id.to_s + '_time']
-                    }]] + [[t('activerecord.attributes.router.router_dimensions.distance'), routers.select(&:distance?).collect{ |router|
-                    [router.name + ' - ' + t('activerecord.attributes.router.router_dimensions.distance'), router.id.to_s + '_distance']
-                    }]],
-                  @customer.router_id.to_s + '_' + @customer.router_dimension), class: 'form-control', required: true %>
-                <span class="input-group-addon"><i class="fa fa-gear fa-fw"></i></span>
-              </div>
-              <p class="help-block"><%= t '.router_help' %></p>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="col-md-2 control-label" for="speed_multiplicator">
-              <%= t("activerecord.attributes.customer.speed_multiplicator") %>
-            </label>
-            <div class="col-md-6 input-append">
-              <div class="input-group">
-                <%= number_field_tag :speed_multiplicator, (@customer.speed_multiplicator ? (@customer.speed_multiplicator * 100).to_i : 100), { min: 50, max: 150, placeholder: t(".speed_multiplicator_default", n: 100), class: "form-control number-to-percentage" } %>
-                <span class="input-group-addon">%</span>
-              </div>
-              <p class="help-block">
-                <%= t("customers.form.speed_multiplicator_help") %>
-              </p>
-            </div>
-          </div>
-
-          <%= f.text_field :take_over, {placeholder: t('all.unit.hour_minute_second'), value: @customer.take_over && l(@customer.take_over.utc, format: :hour_minute_second), input_group: content_tag('i', '', class: 'fa fa-clock-o fa-fw')} do %>
-            <p class="help-block"><%= t '.take_over_help' %></p>
-          <% end %>
-          <%= f.text_field :default_country, required: true %>
-        </fieldset>
+    <div class="form-group">
+      <label class="col-md-2 control-label" for="speed_multiplicator">
+        <%= t("activerecord.attributes.customer.speed_multiplicator") %>
+      </label>
+      <div class="col-md-6 input-append">
+        <div class="input-group">
+          <%= number_field_tag :speed_multiplicator, (@customer.speed_multiplicator ? (@customer.speed_multiplicator * 100).to_i : 100), { min: 50, max: 150, placeholder: t(".speed_multiplicator_default", n: 100), class: "form-control number-to-percentage" } %>
+          <span class="input-group-addon">%</span>
+        </div>
+        <p class="help-block">
+          <%= t("customers.form.speed_multiplicator_help") %>
+        </p>
       </div>
+    </div>
+
+    <%= f.text_field :take_over, {placeholder: t('all.unit.hour_minute_second'), value: @customer.take_over && l(@customer.take_over.utc, format: :hour_minute_second), input_group: content_tag('i', '', class: 'fa fa-clock-o fa-fw')} do %>
+      <p class="help-block"><%= t '.take_over_help' %></p>
+    <% end %>
+    <%= f.text_field :default_country, required: true %>
+  </fieldset>
       
-      <% if current_user.admin? %>
-      <div class="tab-pane" id="options">
-        <fieldset>
-          <legend class="scheduler-border">
-            <%= t '.options' %>
-          </legend>
+  <% if current_user.admin? %>
+    <fieldset>
+      <legend class="scheduler-border">
+        <%= t '.options' %>
+      </legend>
 
-          <%= f.toggles t 'activerecord.attributes.customer.enable_orders' do %>
-            <%= f.check_box :enable_orders %>
-          <% end %>
-          <%= f.toggles t 'activerecord.attributes.customer.enable_multi_vehicle_usage_sets' do %>
-            <%= f.check_box :enable_multi_vehicle_usage_sets %>
-          <% end %>
-          <%= f.toggles t 'activerecord.attributes.customer.enable_multi_visits' do %>
-            <%= f.check_box :enable_multi_visits %>
-          <% end %>
-          <%= f.toggles t 'activerecord.attributes.customer.enable_references' do %>
-            <%= f.check_box :enable_references %>
-          <% end %>
-          <%= f.toggles t 'activerecord.attributes.customer.enable_global_optimization' do %>
-            <%= f.check_box :enable_global_optimization %>
-          <% end %>
-          <%= f.toggles t 'activerecord.attributes.customer.enable_vehicle_position' do %>
-            <%= f.check_box :enable_vehicle_position %>
-          <% end %>
-          <%= f.toggles t 'activerecord.attributes.customer.enable_stop_status' do %>
-            <%= f.check_box :enable_stop_status %>
-          <% end %>
-        </fieldset>
-      </div>
-
-      <div class="tab-pane" id="optmisation">
-        <fieldset>
-          <legend class="scheduler-border">
-            <%= t '.optimization_parameters' %>
-          </legend>
-          <%= f.number_field :optimization_cluster_size, { placeholder: t('.optimization_cluster_size_default', n: Mapotempo::Application.config.optimize_cluster_size), min: 0, input_group: t('all.unit.second')} do %>
-            <p class="help-block"><%= t '.optimization_cluster_size_help' %></p>
-          <% end %>
-          <%= f.number_field :optimization_time, { placeholder: t('.optimization_time_default', n: Mapotempo::Application.config.optimize_time), min: 0, input_group: t('all.unit.second')} do %>
-            <p class="help-block"><%= t '.optimization_time_help' %></p>
-          <% end %>
-          <%= f.number_field :optimization_stop_soft_upper_bound, { placeholder: t('.optimization_soft_upper_bound_default', n: Mapotempo::Application.config.optimize_stop_soft_upper_bound), min: 0, step: 'any', input_group: '×'} do %>
-            <p class="help-block"><%= t '.optimization_stop_soft_upper_bound_help' %></p>
-          <% end %>
-          <%= f.number_field :optimization_vehicle_soft_upper_bound, { placeholder: t('.optimization_soft_upper_bound_default', n: Mapotempo::Application.config.optimize_vehicle_soft_upper_bound), min: 0, step: 'any', input_group: '×'} do %>
-            <p class="help-block"><%= t '.optimization_vehicle_soft_upper_bound_help' %></p>
-          <% end %>
-        </fieldset>
-      </div>
+      <%= f.toggles t 'activerecord.attributes.customer.enable_orders' do %>
+        <%= f.check_box :enable_orders %>
       <% end %>
+      <%= f.toggles t 'activerecord.attributes.customer.enable_multi_vehicle_usage_sets' do %>
+        <%= f.check_box :enable_multi_vehicle_usage_sets %>
+      <% end %>
+      <%= f.toggles t 'activerecord.attributes.customer.enable_multi_visits' do %>
+        <%= f.check_box :enable_multi_visits %>
+      <% end %>
+      <%= f.toggles t 'activerecord.attributes.customer.enable_references' do %>
+        <%= f.check_box :enable_references %>
+      <% end %>
+      <%= f.toggles t 'activerecord.attributes.customer.enable_global_optimization' do %>
+        <%= f.check_box :enable_global_optimization %>
+      <% end %>
+      <%= f.toggles t 'activerecord.attributes.customer.enable_vehicle_position' do %>
+        <%= f.check_box :enable_vehicle_position %>
+      <% end %>
+      <%= f.toggles t 'activerecord.attributes.customer.enable_stop_status' do %>
+        <%= f.check_box :enable_stop_status %>
+      <% end %>
+    </fieldset>
 
-      <div class="tab-pane" id="diffusion">
-        <fieldset>
-          <legend class="scheduler-border">
-            <%= t '.outputs' %>
-          </legend>
-          <div class="panel panel-default accordion">
-            <div class="panel-heading">
-              <h2 class="panel-title">
-                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapsePrint">
-                  <%= t '.print.title' %>
-                </a>
-              </h2>
-            </div>
-            <div id="collapsePrint" class="panel-collapse collapse">
-              <div class="panel-body">
-                <%= f.toggles t 'activerecord.attributes.customer.print_map' do %>
-                  <%= f.check_box :print_map %>
-                <% end %>
-                <%= f.toggles t 'activerecord.attributes.customer.print_planning_annotating' do %>
-                  <%= f.check_box :print_planning_annotating %>
-                <% end %>
-                <%= f.toggles t 'activerecord.attributes.customer.print_stop_time' do %>
-                  <%= f.check_box :print_stop_time %>
-                <% end %>
-                <%= f.text_area :print_header do %>
-                  <p class="help-block"><%= t '.print_header_help' %></p>
-                <% end %>
-              </div>
+    <fieldset>
+      <legend class="scheduler-border">
+        <%= t '.optimization_parameters' %>
+      </legend>
+      <%= f.number_field :optimization_cluster_size, { placeholder: t('.optimization_cluster_size_default', n: Mapotempo::Application.config.optimize_cluster_size), min: 0, input_group: t('all.unit.second')} do %>
+        <p class="help-block"><%= t '.optimization_cluster_size_help' %></p>
+      <% end %>
+      <%= f.number_field :optimization_time, { placeholder: t('.optimization_time_default', n: Mapotempo::Application.config.optimize_time), min: 0, input_group: t('all.unit.second')} do %>
+        <p class="help-block"><%= t '.optimization_time_help' %></p>
+      <% end %>
+      <%= f.number_field :optimization_stop_soft_upper_bound, { placeholder: t('.optimization_soft_upper_bound_default', n: Mapotempo::Application.config.optimize_stop_soft_upper_bound), min: 0, step: 'any', input_group: '×'} do %>
+        <p class="help-block"><%= t '.optimization_stop_soft_upper_bound_help' %></p>
+      <% end %>
+      <%= f.number_field :optimization_vehicle_soft_upper_bound, { placeholder: t('.optimization_soft_upper_bound_default', n: Mapotempo::Application.config.optimize_vehicle_soft_upper_bound), min: 0, step: 'any', input_group: '×'} do %>
+        <p class="help-block"><%= t '.optimization_vehicle_soft_upper_bound_help' %></p>
+      <% end %>
+    </fieldset>
+  <% end %>
+
+  <fieldset>
+    <legend class="scheduler-border">
+      <%= t '.outputs' %>
+    </legend>
+    <div class="panel panel-default accordion">
+      <div class="panel-heading">
+        <h2 class="panel-title">
+          <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapsePrint">
+            <%= t '.print.title' %>
+          </a>
+        </h2>
+      </div>
+      <div id="collapsePrint" class="panel-collapse collapse">
+        <div class="panel-body">
+          <%= f.toggles t 'activerecord.attributes.customer.print_map' do %>
+            <%= f.check_box :print_map %>
+          <% end %>
+          <%= f.toggles t 'activerecord.attributes.customer.print_planning_annotating' do %>
+            <%= f.check_box :print_planning_annotating %>
+          <% end %>
+          <%= f.toggles t 'activerecord.attributes.customer.print_stop_time' do %>
+            <%= f.check_box :print_stop_time %>
+          <% end %>
+          <%= f.text_area :print_header do %>
+            <p class="help-block"><%= t '.print_header_help' %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <% if current_user.admin? %>
+      <%= f.toggles t 'activerecord.attributes.customer.enable_external_callback' do %>
+        <%= f.check_box :enable_external_callback %>
+      <% end %>
+    <% end %>
+    <% if @customer.enable_external_callback? %>
+      <div id="external_callback_container" class="panel panel-default accordion">
+        <div class="panel-heading">
+          <h2 class="panel-title">
+            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseExternalCallback">
+              <%= t '.external_callback.title' %>
+            </a>
+          </h2>
+        </div>
+        <div id="collapseExternalCallback" class="panel-collapse">
+          <div class="panel-body">
+            <div class="col-md-10">
+              <%= f.text_field :external_callback_name, t('.external_callback.name'), placeholder: t('.external_callback.name_placeholder') %>
+              <%= f.text_field :external_callback_url, t('.external_callback.url'), placeholder: t('.external_callback.url_placeholder') do %>
+                <div class="help-block"><%= simple_format t('.external_callback.url_help') %></div>
+              <% end %>
             </div>
           </div>
-
-          <% if current_user.admin? %>
-            <%= f.toggles t 'activerecord.attributes.customer.enable_external_callback' do %>
-              <%= f.check_box :enable_external_callback %>
-            <% end %>
-          <% end %>
-          <% if @customer.enable_external_callback? %>
-            <div id="external_callback_container" class="panel panel-default accordion">
-              <div class="panel-heading">
-                <h2 class="panel-title">
-                  <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseExternalCallback">
-                    <%= t '.external_callback.title' %>
-                  </a>
-                </h2>
-              </div>
-              <div id="collapseExternalCallback" class="panel-collapse">
-                <div class="panel-body">
-                  <div class="col-md-10">
-                    <%= f.text_field :external_callback_name, t('.external_callback.name'), placeholder: t('.external_callback.name_placeholder') %>
-                    <%= f.text_field :external_callback_url, t('.external_callback.url'), placeholder: t('.external_callback.url_placeholder') do %>
-                      <div class="help-block"><%= simple_format t('.external_callback.url_help') %></div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            </div>
-          <% end %>
-          
-        </fieldset>
+        </div>
       </div>
-
-    </div>
-
-    <div class="pull-right">
-      <%= f.actions do %>
-        <%= f.submit t('.submit') %>
-      <% end %>
-    </div>
+    <% end %>
     
-</div>
+  </fieldset>
+
+  <div class="pull-right">
+    <%= f.actions do %>
+      <%= f.submit t('.submit') %>
+    <% end %>
+  </div>
+
 <% end %>

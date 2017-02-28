@@ -79,7 +79,7 @@ class V01::Devices::OrangeTest < ActiveSupport::TestCase
       set_route
       post api("devices/orange/send_multiple", { customer_id: @customer.id, planning_id: @route.planning_id })
       assert_equal 201, last_response.status
-      routes = @route.planning.routes.select(&:vehicle_usage).select{|route| route.vehicle_usage.vehicle.orange_id }
+      routes = @route.planning.routes.select(&:vehicle_usage).select{|route| route.vehicle_usage.vehicle.devices_linking[:orange_id] }
       routes.each &:reload
       routes.each{|route| assert route.last_sent_at }
       assert_equal(routes.map{|route| { "id" => route.id, "last_sent_to" => 'Orange', "last_sent_at" => route.last_sent_at.iso8601(3), "last_sent_at_formatted"=>I18n.l(route.last_sent_at) } }, JSON.parse(last_response.body))
@@ -102,7 +102,7 @@ class V01::Devices::OrangeTest < ActiveSupport::TestCase
       set_route
       delete api("devices/orange/clear_multiple", { customer_id: @customer.id, planning_id: @route.planning_id })
       assert_equal 200, last_response.status
-      routes = @route.planning.routes.select(&:vehicle_usage).select{|route| route.vehicle_usage.vehicle.orange_id }
+      routes = @route.planning.routes.select(&:vehicle_usage).select{|route| route.vehicle_usage.vehicle.devices_linking[:orange_id] }
       routes.each &:reload
       routes.each{|route| assert !route.last_sent_at }
       assert_equal(routes.map{|route| { "id" => route.id, "last_sent_to" => nil, "last_sent_at" => nil, "last_sent_at_formatted"=>nil } }, JSON.parse(last_response.body))
@@ -114,11 +114,11 @@ class V01::Devices::OrangeTest < ActiveSupport::TestCase
       set_route
 
       # Customer Already Have Devices
-      @customer.vehicles.update_all orange_id: "orange_id"
+      @customer.vehicles.update_all devices_linking: {orange_id: "orange_id"}
 
       # Reset Vehicle
       @customer.vehicles.reload ; @vehicle.reload
-      assert_equal "orange_id", @vehicle.orange_id
+      assert_equal "orange_id", @vehicle.devices_linking[:orange_id]
 
       # Send Request.. Send Credentials As Parameters
       post api("devices/orange/sync")
@@ -126,7 +126,7 @@ class V01::Devices::OrangeTest < ActiveSupport::TestCase
 
       # Vehicle Should Now Have All Values
       @customer.vehicles.reload ; @vehicle.reload
-      assert_equal "325000749", @vehicle.orange_id
+      assert_equal "325000749", @vehicle.devices_linking[:orange_id]
     end
   end
 end

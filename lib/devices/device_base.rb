@@ -30,7 +30,7 @@ end
 
 module DeviceInterface
   extend Interface
-  method :get_device_definition
+  method :definition
   method :check_auth
 end
 

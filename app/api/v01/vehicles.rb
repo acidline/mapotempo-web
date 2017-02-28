@@ -48,8 +48,8 @@ class V01::Vehicles < Grape::API
           p[:capacities] = p[:capacities].merge({ current_customer.deliverable_units[1].id.to_s => p.delete(:capacity1_2) }) if p[:capacity1_2] && current_customer.deliverable_units.size > 1
         end
       end
-
-      p.permit(:contact_email, :ref, :name, :emission, :consumption, :color, :tomtom_id, :masternaut_ref, :router_id, :router_dimension, :speed_multiplicator, capacities: (current_customer || @current_user.reseller.customers.where(id: params[:customer_id]).first!).deliverable_units.map{ |du| du.id.to_s })
+      # permit tomtom_id, masternaut_ref
+      p.permit(:contact_email, :ref, :name, :emission, :consumption, :color, :devices_linking, :router_id, :router_dimension, :speed_multiplicator, capacities: (current_customer || @current_user.reseller.customers.where(id: params[:customer_id]).first!).deliverable_units.map{ |du| du.id.to_s })
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
@@ -99,7 +99,7 @@ class V01::Vehicles < Grape::API
         if customer.masternaut?
           (MasternautService.new(customer: customer).get_vehicles_pos || []).each do |item|
             vehicle_id = item.delete :masternaut_vehicle_id
-            vehicle = vehicles.detect{ |v| v.masternaut_ref == vehicle_id }
+            vehicle = vehicles.detect{ |v| v.devices_linking[:masternaut_ref] == vehicle_id }
             next if !vehicle
             positions << item.merge(vehicle_id: vehicle.id)
           end
@@ -112,7 +112,7 @@ class V01::Vehicles < Grape::API
         if customer.orange?
           (OrangeService.new(customer: customer).get_vehicles_pos || []).each do |item|
             vehicle_id = item.delete :orange_vehicle_id
-            vehicle = vehicles.detect{ |v| v.orange_id == vehicle_id }
+            vehicle = vehicles.detect{ |v| v.devices_linking[:orange_id] == vehicle_id }
             next if !vehicle
             positions << item.merge(vehicle_id: vehicle.id)
           end
@@ -126,7 +126,7 @@ class V01::Vehicles < Grape::API
           teksat_authenticate customer
           (TeksatService.new(customer: customer, ticket_id: session[:teksat_ticket_id]).get_vehicles_pos || []).each do |item|
             vehicle_id = item.delete :teksat_vehicle_id
-            vehicle = vehicles.detect{ |v| v.teksat_id == vehicle_id }
+            vehicle = vehicles.detect{ |v| v.devices_linking[:teksat_id] == vehicle_id }
             next if !vehicle
             positions << item.merge(vehicle_id: vehicle.id)
           end
@@ -139,7 +139,7 @@ class V01::Vehicles < Grape::API
         if customer.tomtom?
           (TomtomService.new(customer: customer).get_vehicles_pos || []).each do |item|
             vehicle_id = item.delete :tomtom_vehicle_id
-            vehicle = vehicles.detect{ |v| v.tomtom_id == vehicle_id }
+            vehicle = vehicles.detect{ |v| v.devices_linking[:tomtom_id] == vehicle_id }
             next if !vehicle
             positions << item.merge(vehicle_id: vehicle.id)
           end

@@ -10,9 +10,14 @@ class TomtomTest < ActionController::TestCase
     @service = Mapotempo::Application.config.devices.tomtom
   end
 
-  test 'test list' do
+  test 'check authentication' do
     with_stubs [:client_objects_wsdl, :show_object_report] do
-      assert @service.test_list @customer, { account: @customer.tomtom_account, user: @customer.tomtom_user, password: @customer.tomtom_password }
+      params = {
+        tomtom_account: @customer.devices[:tomtom][:account],
+        tomtom_username: @customer.devices[:tomtom][:username],
+        tomtom_password: @customer.devices[:tomtom][:password]
+      }
+      assert @service.check_auth params, @customer
     end
   end
 

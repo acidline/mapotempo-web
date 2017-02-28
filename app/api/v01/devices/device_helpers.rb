@@ -79,10 +79,10 @@ module Devices
     def tomtom_sync_vehicles(customer)
       tomtom_vehicles = TomtomService.new(customer: customer).list_vehicles tomtom_credentials(customer)
       tomtom_vehicles = tomtom_vehicles.select{ |item| !item[:objectUid].blank? }
-      customer.vehicles.update_all tomtom_id: nil
+      customer.vehicles.update_all devices_linking: {tomtom_id: nil}
       tomtom_vehicles.each_with_index do |vehicle, index|
         next if !customer.vehicles[index]
-        customer.vehicles[index].update! tomtom_id: vehicle[:objectUid], fuel_type: vehicle[:fuelType], color: vehicle[:color]
+        customer.vehicles[index].update! devices_linking: {tomtom_id: vehicle[:objectUid]}, fuel_type: vehicle[:fuelType], color: vehicle[:color]
       end
     end
 

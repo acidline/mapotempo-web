@@ -5,7 +5,7 @@ class V01::Devices::DevicesApi < Grape::API
     helpers do
 
       def device_object(device)
-        Mapotempo::Application.config.devices[device.to_sym]
+        Mapotempo::Application.config.devices[device]
       end
 
       def device_enabled?(device)
@@ -14,8 +14,8 @@ class V01::Devices::DevicesApi < Grape::API
       end
 
       def authenticate(device, customer)
-        if device_enabled?(device) && device_object(:device).respond_to?('check_auth')
-          device_object(:device).check_auth(params, customer)
+        if device_enabled?(device) && device_object(device).respond_to?('check_auth')
+          device_object(device).check_auth(params, customer)
         end
       end
 
@@ -39,7 +39,7 @@ class V01::Devices::DevicesApi < Grape::API
     end
     get ':device/auth' do
       authenticate(params[:device].to_sym, @customer)
-      status 204
+      #status 204
     end
 
 

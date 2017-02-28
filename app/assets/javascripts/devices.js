@@ -175,7 +175,7 @@ function devices_observe_customer(params) {
 
     function error_callback(apiError) {
       apiError = apiError || false;
-      apiClass = apiError ? 'api-error' : '';
+      var apiClass = apiError ? 'api-error' : '';
       $('.' + config.name + '-api-sync').attr('disabled', 'disabled');
       $('#' + config.name + '_container').removeClass('panel-default panel-success').addClass('panel-danger');
       $('#' + 'nav-tabs-device-' + config.name).removeClass('device-ok').addClass('device-notok' + ' ' + apiClass);
@@ -283,7 +283,10 @@ function devices_observe_customer(params) {
             } else {
               success_callback();
             }
-          }
+          },
+          error: function(jqXHR, textStatus, error) {
+            error_callback(true);
+          } 
         }));
       }
 

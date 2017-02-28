@@ -20,7 +20,7 @@ class Tomtom < DeviceBase
 
   class TomTomServiceBusyError < StandardError; end
 
-  def get_device_definition
+  def definition
     {
       device: 'tomtom',
       label: 'Tomtom',
@@ -264,7 +264,7 @@ class Tomtom < DeviceBase
       },
       attributes!: {
         deviceToClear: {
-          objectUid: route.vehicle_usage.vehicle.tomtom_id,
+          objectUid: route.vehicle_usage.vehicle.devices_linking[:tomtom_id],
         }
       }
     }
@@ -380,7 +380,7 @@ class Tomtom < DeviceBase
   end
 
   def sendDestinationOrder(customer, route, position, orderid, description, time, waypoints = nil)
-    objectuid = route.vehicle_usage.vehicle.tomtom_id
+    objectuid = route.vehicle_usage.vehicle.devices_linking[:tomtom_id]
     params = {
       dstOrderToSend: {
         orderText: strip_sql(description).strip[0..499],

@@ -93,7 +93,7 @@ class V01::Devices::TomtomTest < ActiveSupport::TestCase
       set_route
       post api("devices/tomtom/send_multiple", { customer_id: @customer.id, planning_id: @route.planning_id, type: "orders" })
       assert_equal 201, last_response.status
-      routes = @route.planning.routes.select(&:vehicle_usage).select{|route| route.vehicle_usage.vehicle.tomtom_id }
+      routes = @route.planning.routes.select(&:vehicle_usage).select{|route| route.vehicle_usage.vehicle.devices_linking[:tomtom_id] }
       routes.each &:reload
       routes.each{|route| assert route.last_sent_at }
       assert_equal(routes.map{|route| { "id" => route.id, "last_sent_to" => 'TomTom', "last_sent_at" => route.last_sent_at.iso8601(3), "last_sent_at_formatted"=>I18n.l(route.last_sent_at) } }, JSON.parse(last_response.body))
@@ -105,7 +105,7 @@ class V01::Devices::TomtomTest < ActiveSupport::TestCase
       set_route
       post api("devices/tomtom/send_multiple", { customer_id: @customer.id, planning_id: @route.planning_id, type: "waypoints" })
       assert_equal 201, last_response.status
-      routes = @route.planning.routes.select(&:vehicle_usage).select{|route| route.vehicle_usage.vehicle.tomtom_id }
+      routes = @route.planning.routes.select(&:vehicle_usage).select{|route| route.vehicle_usage.vehicle.devices_linking[:tomtom_id] }
       routes.each &:reload
       routes.each{|route| assert route.last_sent_at }
       assert_equal(routes.map{|route| { "id" => route.id, "last_sent_to" => 'TomTom', "last_sent_at" => route.last_sent_at.iso8601(3), "last_sent_at_formatted"=>I18n.l(route.last_sent_at) } }, JSON.parse(last_response.body))
@@ -128,7 +128,7 @@ class V01::Devices::TomtomTest < ActiveSupport::TestCase
       set_route
       delete api("devices/tomtom/clear_multiple", { customer_id: @customer.id, planning_id: @route.planning_id })
       assert_equal 200, last_response.status
-      routes = @route.planning.routes.select(&:vehicle_usage).select{|route| route.vehicle_usage.vehicle.tomtom_id }
+      routes = @route.planning.routes.select(&:vehicle_usage).select{|route| route.vehicle_usage.vehicle.devices_linking[:tomtom_id] }
       routes.each &:reload
       routes.each{|route| assert !route.last_sent_at }
       assert_equal(routes.map{|route| { "id" => route.id, "last_sent_to" => nil, "last_sent_at" => nil, "last_sent_at_formatted"=>nil } }, JSON.parse(last_response.body))
@@ -140,13 +140,13 @@ class V01::Devices::TomtomTest < ActiveSupport::TestCase
       set_route
 
       # Customer Already Have Devices
-      @customer.vehicles.update_all tomtom_id: "tomtom_id"
+      @customer.vehicles.update_all devices_linking: {tomtom_id: "tomtom_id"}
 
       # Reset Vehicle
       default_color = "#004499"
       @vehicle.update! fuel_type: nil, color: default_color
       @customer.vehicles.reload ; @vehicle.reload
-      assert_equal "tomtom_id", @vehicle.tomtom_id
+      assert_equal "tomtom_id", @vehicle.devices_linking[:tomtom_id]
       assert !@vehicle.fuel_type
       assert_equal default_color, @vehicle.color
 
@@ -156,7 +156,7 @@ class V01::Devices::TomtomTest < ActiveSupport::TestCase
 
       # Vehicle Should Now Have All Values
       @customer.vehicles.reload ; @vehicle.reload
-      assert_equal "1-44063-666E054E7", @vehicle.tomtom_id
+      assert_equal "1-44063-666E054E7", @vehicle.devices_linking[:tomtom_id]
       assert_equal "DIESEL", @vehicle.fuel_type
       assert_equal "#0000FF", @vehicle.color # Blue
 
@@ -171,27 +171,34 @@ class V01::Devices::TomtomTest < ActiveSupport::TestCase
 
       # Reset Vehicle
       default_color = "#004499"
-      @vehicle.update! tomtom_id: nil, fuel_type: nil, color: default_color
+      @vehicle.update! devices_linking: { tomtom_id: nil}, fuel_type: nil, color: default_color
       @vehicle.reload
-      assert !@vehicle.tomtom_id
+      assert !@vehicle.devices_linking[:tomtom_id]
       assert !@vehicle.fuel_type
       assert_equal default_color, @vehicle.color
 
       # Reset Customer
-      @customer.update! tomtom_account: nil, tomtom_user: nil, tomtom_password: nil
+      tomtom_reset = {
+        tomtom: {
+          account: nil,
+          username: nil,
+          password: nil
+        }
+      }
+      @customer.update! devices: tomtom_reset
       @customer.reload
-      tomtom_account, tomtom_user, tomtom_password = @customer.tomtom_account, @customer.tomtom_user, @customer.tomtom_password
-      assert !@customer.tomtom_account
-      assert !@customer.tomtom_user
-      assert !@customer.tomtom_password
-
+      params = {
+        tomtom_account: @customer.devices[:tomtom][:account],
+        tomtom_username: @customer.devices[:tomtom][:username],
+        tomtom_password: @customer.devices[:tomtom][:password]
+      }
       # Send Request.. Send Credentials As Parameters
-      post api("devices/tomtom/sync"), { tomtom_account: tomtom_account, tomtom_user: tomtom_user, tomtom_password: tomtom_password }
+      post api("devices/tomtom/sync"), params
       assert_equal 204, last_response.status
 
       # Vehicle Should Now Have All Values
       @vehicle.reload
-      assert_equal "1-44063-666E054E7", @vehicle.tomtom_id
+      assert_equal "1-44063-666E054E7", @vehicle.devices_linking[:tomtom_id]
       assert_equal "DIESEL", @vehicle.fuel_type
       assert_equal "#0000FF", @vehicle.color # Blue
     end

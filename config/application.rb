@@ -10,7 +10,7 @@ require_relative '../lib/optim/ort'
 require_relative '../lib/optim/optimizer_wrapper'
 
 require_relative '../lib/devices/device_base'
-['alyacom', 'masternaut', 'orange', 'teksat', 'tomtom', 'trimble', 'locster', 'suiviDeFlotte'].each{|name|
+['alyacom', 'masternaut', 'orange', 'teksat', 'tomtom', 'trimble', 'locster', 'suivi_de_flotte'].each{|name|
   require_relative "../lib/devices/#{name}"
 }
 

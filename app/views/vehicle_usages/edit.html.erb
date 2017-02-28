@@ -7,10 +7,10 @@
 controller.js(
   customer_id: @vehicle_usage.vehicle.customer.id,
   tomtom: current_user.customer.tomtom?,
-  tomtom_id: @vehicle_usage.vehicle.devices_linking[:tomtom_id],
+  tomtom_id: !@vehicle_usage.vehicle.devices_linking.nil? ? @vehicle_usage.vehicle.devices_linking[:tomtom_id] : nil ,
   teksat: current_user.customer.teksat?,
-  teksat_id: @vehicle_usage.vehicle.devices_linking[:teksat_id],
+  teksat_id: !@vehicle_usage.vehicle.devices_linking.nil? ? @vehicle_usage.vehicle.devices_linking[:teksat_id] : nil,
   orange: current_user.customer.orange?,
-  orange_id: @vehicle_usage.vehicle.devices_linking[:orange_id]
+  orange_id: !@vehicle_usage.vehicle.devices_linking.nil? ? @vehicle_usage.vehicle.devices_linking[:orange_id] : nil,
 )
 %>

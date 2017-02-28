@@ -87,9 +87,11 @@ module VehicleUsagesHelper
 
   def vehicle_external_services(vehicle)
     services = []
-    vehicle.devices_linking.each { |key, value|
-      services << key.to_s.split('_').first.capitalize if !value.nil?
-    }
+    if(!vehicle.devices_linking.nil?)
+      vehicle.devices_linking.each { |key, value|
+        services << key.to_s.split('_').first.capitalize if !value.nil?
+      }
+    end
     services.join(', ')
   end
 

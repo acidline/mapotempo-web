@@ -48,9 +48,8 @@ class V01::Entities::VehicleWithoutVehicleUsage < Grape::Entity
   expose(:speed_multiplicator, documentation: { type: Float })
 
   # Devices
-  expose(:orange_id, documentation: { type: String })
-  expose(:teksat_id, documentation: { type: String })
-  expose(:tomtom_id, documentation: { type: String })
+  # add auth for : orange_id, teksat_id, tomtom_id
+  expose(:devices_linking, documentation: {type: Hash})
 end
 
 class V01::Entities::Vehicle < V01::Entities::VehicleWithoutVehicleUsage

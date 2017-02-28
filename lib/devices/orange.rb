@@ -20,7 +20,7 @@ require 'addressable'
 
 class Orange < DeviceBase
 
-  def get_device_definition
+  def definition
     {
       device: 'orange',
       label: 'Orange',
@@ -145,7 +145,7 @@ class Orange < DeviceBase
     f = Tempfile.new Time.zone.now.to_i.to_s
     f.write to_xml(route, options)
     f.rewind
-    response = RestClient::Request.execute method: :post, user: customer.orange_user, password: customer.orange_password, url: api_url + '/pnd/index.php', payload: { multipart: true, file: f }
+    response = RestClient::Request.execute method: :post, user: customer.devices[:orange][:username], password: customer.devices[:orange][:password], url: api_url + '/pnd/index.php', payload: { multipart: true, file: f }
     f.unlink
     response
   end
@@ -156,7 +156,7 @@ class Orange < DeviceBase
     xml.tag! :ROOT do
       xml.tag! :version
       xml.tag! :transmit, Time.zone.now.strftime('%d/%m/%Y %H:%M')
-      xml.tag! :zone, nil, type: 'dest', ref: route.id, eqpid: route.vehicle_usage.vehicle.orange_id, drivername: nil, vehid: nil, badge: nil
+      xml.tag! :zone, nil, type: 'dest', ref: route.id, eqpid: route.vehicle_usage.vehicle.devices_linking[:orange_id], drivername: nil, vehid: nil, badge: nil
       xml.tag! :zone, nil, type: 'mission', ref: route.id, lang: nil, title: "Mission #{route.id}", txt: route.planning.name,
         prevmisdeb: p_time(route, route.start).strftime('%d/%m/%Y %H:%M'), prevmisfin: p_time(route, route.end).strftime('%d/%m/%Y %H:%M')
       xml.tag! :zone, nil, type: 'operation' do

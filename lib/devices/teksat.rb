@@ -21,7 +21,7 @@ class Teksat < DeviceBase
 
   attr_accessor :ticket_id
 
-  def get_device_definition
+  def definition
     {
       device: 'teksat',
       label: 'Teksat',
@@ -114,7 +114,7 @@ class Teksat < DeviceBase
 
   def send_mission(customer, route, start_time, destination)
     response = RestClient.get set_mission_url(customer, {
-      mi_v_id: route.vehicle_usage.vehicle.teksat_id,
+      mi_v_id: route.vehicle_usage.vehicle.devices_linking[:teksat_id],
       mi_label: route.planning.name,
       mi_customer: destination.name,
       mi_begin_latitude: destination.lat,
@@ -153,7 +153,7 @@ class Teksat < DeviceBase
 
   def get_vehicles_pos_url(customer)
     Addressable::Template.new('http://%s/webservices/map/get-vehicles-pos.jsp{?query*}' % [customer.devices[:teksat][:url]]).expand(
-      query: { custID: customer.teksat_customer_id, tck: ticket_id }
+      query: { custID: customer.devices[:teksat][:customer_id], tck: ticket_id }
     ).to_s
   end
 

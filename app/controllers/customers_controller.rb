@@ -47,7 +47,7 @@ class CustomersController < ApplicationController
 
   def update
     @customer.assign_attributes(customer_params)
-    @customer.update_columns(devices: customer_params[:devices])
+    #@customer.update_columns(devices: customer_params[:devices])
     respond_to do |format|
       if @customer.save
         format.html { redirect_to edit_customer_path(@customer), notice: t('activerecord.successful.messages.updated', model: @customer.class.model_name.human) }
@@ -100,7 +100,7 @@ class CustomersController < ApplicationController
       p[:end_subscription] = Date.strptime(p[:end_subscription], I18n.t('time.formats.datepicker')).strftime(ACTIVE_RECORD_DATE_MASK) if !p[:end_subscription].blank?
       p
     else
-      allowed_params = [:take_over, :print_planning_annotating, :print_header, :router_id, :router_dimension, :speed_multiplicator, com_api_key, :default_country, :print_stop_time, :print_map, :external_callback_url, :external_callback_name, devices: permit_recursive_params(params[:customer][:devices])]
+      allowed_params = [:take_over, :print_planning_annotating, :print_header, :router_id, :router_dimension, :speed_multiplicator, :default_country, :print_stop_time, :print_map, :external_callback_url, :external_callback_name, devices: permit_recursive_params(params[:customer][:devices])]
       allowed_params << :max_vehicles if !Mapotempo::Application.config.manage_vehicles_only_admin
       params.require(:customer).permit(*allowed_params)
     end
